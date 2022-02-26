@@ -11,11 +11,11 @@
 - 菜单依次“Build”——“Build Bundle(s) / APK(s)”——“Build APK(s)”
 - 等待生成应用完成，IDE右下角会提示
 
-## 提交分支限制方法（抖音）
+## 提交分支限制方法
 
 
 
-## 编译依赖限制，特定版本打包（抖音）
+## 编译依赖限制，特定版本打包
 
 - gradle命令添加参数
 
@@ -37,41 +37,7 @@ if (project.hasProperty("hello")) {
 - 代码中按照反射使用
 
 通过反射调用指定版本的测试类，因为是非必须导入的，所以IDE无法提示，只能够反射了。 并通过反射调用类的方法。
-```kotlin
-override fun onClick(context: Context) {
-    val did = DeviceRegisterManager.getDeviceId()
-    if(did == null) {
-        Toast.makeText(context, "did not fetched, please wait for a moment.", Toast.LENGTH_LONG).show()
-        return
-    }
 
-    val config = Class.forName("com.ss.android.ugc.aweme.precisetest.PreciseTestConfig")
-            .getConstructor(
-                    String::class.java,
-                    String::class.java,
-                    String::class.java,
-                    String::class.java,
-                    String::class.java,
-                    String::class.java,
-                    String::class.java,
-                    Boolean::class.javaPrimitiveType)
-            .newInstance(
-                    WANDA_PROJECT_ID,
-                    SMART_EYE_PROJECT_ID,
-                    AppContextManager.getVersionName(),
-                    AppContextManager.getGitBranch(),
-                    AppContextManager.getGitSHA(),
-                    did,
-                    ServiceManager.get().getService(IUserService::class.java).currentUserID,
-                    false) // dryRun
-
-    config::class.java
-            .getMethod("startFrom", FragmentActivity::class.java)
-            .invoke(config, context)
-
-
-}
-```
 
 ## 依赖注入模块
 
