@@ -1,4 +1,4 @@
-package com.example.sophistnerd.viewmodel
+package com.example.sophistnerd.component.jetpack
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.example.sophistnerd.api.UnsplashApi
 import com.example.sophistnerd.inject.DaggerMainComponent
 import com.example.sophistnerd.service.DownloadImageImpl
-import com.example.sophistnerd.util.showMessageSafely
 import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Math.abs
+import java.util.logging.Logger
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
@@ -22,41 +22,52 @@ class MainViewModel : ViewModel() {
 
     @Inject
     lateinit var unsplashApi: UnsplashApi
+    @Inject
+    lateinit var logger: Logger
 
+    val imageSource = MutableLiveData<ArrayList<UnsplashPhoto>>(ArrayList())
     val currentImage = MutableLiveData<UnsplashPhoto>()
-    private val dataSource = mutableListOf<UnsplashPhoto>()
+
     private var index = 0
+    private var lastKeywords: String? = null
 
 
     suspend fun search(keywords: String) = withContext(Dispatchers.IO) {
+        lastKeywords = keywords
         val unsplashResponse = unsplashApi.searchPhotos(keywords)
-        dataSource.clear()
-        dataSource.addAll(unsplashResponse.results)
-        showMessageSafely("loading keywords : $keywords with ${dataSource.size}")
+
+        imageSource.value?.clear()
+        imageSource.value?.addAll(unsplashResponse.results)
+        logger.info("loading keywords : $keywords with ${imageSource.value?.size}")
     }
 
     fun previous() {
-        if (dataSource.size != 0) {
+        imageSource.value?.let {
             index--
-            index = abs(index % dataSource.size)
-            currentImage.value = dataSource[index]
-            showMessageSafely("previous image : $index / ${dataSource.size}")
+            index = abs(index % it.size)
+            currentImage.value = it[index]
+            logger.info("previous image : $index / ${it.size}")
         }
     }
 
     fun next() {
-        if (dataSource.size != 0) {
+        imageSource.value?.let {
             index++
-            index %= dataSource.size
-            currentImage.value = dataSource[index]
-            showMessageSafely("next image : $index / ${dataSource.size}")
+            index %= it.size
+            currentImage.value = it[index]
+            logger.info("next image : $index / ${it.size}")
         }
     }
 
     suspend fun downloadImage(url: String): Bitmap {
         val bitmap = DownloadImageImpl().download(url)
-        showMessageSafely("downloadImage finish $index / ${dataSource.size}")
+        logger.info("downloadImage finish $index / ${imageSource.value?.size}")
         return bitmap
     }
 
+    suspend fun refresh() {
+        if (lastKeywords != null) {
+            search(lastKeywords!!)
+        }
+    }
 }
