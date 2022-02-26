@@ -15,10 +15,10 @@ import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel : MainViewModel
+    private lateinit var viewModel: MainViewModel
 
-    private lateinit var imageView : ImageView
-    private lateinit var searchKeywords : EditText
+    private lateinit var imageView: ImageView
+    private lateinit var searchKeywords: EditText
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -50,13 +50,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        
-        findViewById<Button>(R.id.previous_image).setOnClickListener { 
+
+        findViewById<Button>(R.id.previous_image).setOnClickListener {
             viewModel.previous()
             showSnackbarMessage(it, "previous finish")
         }
-        
-        findViewById<Button>(R.id.next_image).setOnClickListener { 
+
+        findViewById<Button>(R.id.next_image).setOnClickListener {
             viewModel.next()
             showSnackbarMessage(it, "next finish")
         }

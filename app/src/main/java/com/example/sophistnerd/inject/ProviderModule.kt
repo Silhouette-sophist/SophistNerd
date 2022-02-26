@@ -1,14 +1,20 @@
 package com.example.sophistnerd.inject
 
 import com.example.sophistnerd.api.UnsplashApi
+import dagger.Module
+import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
-class Provider {
+@Module
+class ProviderModule {
 
-    fun providerOkhttpClient() : OkHttpClient {
+    @Singleton
+    @Provides
+    fun providerOkhttpClient(): OkHttpClient {
         return OkHttpClient
             .Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -17,7 +23,9 @@ class Provider {
             .build()
     }
 
-    fun provideUnsplashApi(okHttpClient: OkHttpClient) : UnsplashApi {
+    @Singleton
+    @Provides
+    fun provideUnsplashApi(okHttpClient: OkHttpClient): UnsplashApi {
         return Retrofit.Builder()
             .baseUrl(UnsplashApi.BASE_URL)
             .client(okHttpClient)
