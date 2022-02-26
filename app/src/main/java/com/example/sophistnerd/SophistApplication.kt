@@ -1,14 +1,19 @@
 package com.example.sophistnerd
 
 import android.app.Application
+import android.content.Context
 import com.unsplash.pickerandroid.photopicker.UnsplashPhotoPicker
-import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp
 class SophistApplication : Application() {
+
+    companion object {
+        lateinit var sContext : Context
+    }
 
     override fun onCreate() {
         super.onCreate()
+
+        sContext = this
 
         UnsplashPhotoPicker.init(this,
         "DaMXc7TjqqKRlN_pK95laDMWOX_gfdTJk7cSax26NBE",

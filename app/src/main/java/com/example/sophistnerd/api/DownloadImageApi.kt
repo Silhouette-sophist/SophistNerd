@@ -1,8 +1,8 @@
 package com.example.sophistnerd.api
 
-import okhttp3.ResponseBody
+import android.graphics.Bitmap
 
 interface DownloadImageApi {
 
-    suspend fun download(url : String) : ResponseBody
+    suspend fun download(url : String) : Bitmap
 }

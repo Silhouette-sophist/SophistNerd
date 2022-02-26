@@ -1,23 +1,22 @@
 package com.example.sophistnerd.viewmodel
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.sophistnerd.api.DownloadImageApi
 import com.example.sophistnerd.api.UnsplashApi
+import com.example.sophistnerd.inject.Provider
+import com.example.sophistnerd.service.DownloadImageImpl
+import com.example.sophistnerd.util.showMessageSafely
 import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Math.abs
-import java.net.HttpURLConnection
-import java.net.URL
-import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
 
-    @Inject lateinit var unsplashApi : UnsplashApi
-    @Inject lateinit var downloadImageApi: DownloadImageApi
+    val provider = Provider()
+    val unsplashApi : UnsplashApi = provider.provideUnsplashApi(provider.providerOkhttpClient())
 
     val currentImage = MutableLiveData<UnsplashPhoto>()
 
@@ -29,6 +28,7 @@ class MainViewModel : ViewModel() {
         val unsplashResponse = unsplashApi.searchPhotos(keywords)
         dataSource.clear()
         dataSource.addAll(unsplashResponse.results)
+        showMessageSafely("loading keywords : $keywords with ${dataSource.size}")
     }
 
     fun previous() {
@@ -36,6 +36,7 @@ class MainViewModel : ViewModel() {
             index--
             index = abs(index % dataSource.size)
             currentImage.value = dataSource[index]
+            showMessageSafely("previous image : $index / ${dataSource.size}")
         }
     }
 
@@ -44,25 +45,14 @@ class MainViewModel : ViewModel() {
             index++
             index %= dataSource.size
             currentImage.value = dataSource[index]
+            showMessageSafely("next image : $index / ${dataSource.size}")
         }
     }
 
     suspend fun downloadImage(url : String) : Bitmap {
-        /*val httpURLConnection = URL(url).openConnection() as HttpURLConnection
-        httpURLConnection.doInput = true
-        httpURLConnection.connectTimeout = 60000
-        httpURLConnection.readTimeout = 60000
-        httpURLConnection.connect()
-
-        val inputStream = httpURLConnection.inputStream
-        val bitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-        return bitmap*/
-
-        val responseBody = withContext(Dispatchers.IO) {
-            downloadImageApi.download(url)
-        }
-        return BitmapFactory.decodeStream(responseBody.byteStream())
+        val bitmap = DownloadImageImpl().download(url)
+        showMessageSafely("downloadImage finish $index / ${dataSource.size}")
+        return bitmap
     }
 
 }
