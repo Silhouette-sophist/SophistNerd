@@ -12,6 +12,8 @@ Dagger 是通过@Inject使用具体的某个对象，这个对象呢，是由@Pr
 ```
 ![img.png](img.png)
 
+![img_1.png](img_1.png)
+
 重要坑：
 - Provide 如果是单例模式 对应的Compnent 也要是单例模式
 - inject(Activity act) 不能放父类
