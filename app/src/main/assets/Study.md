@@ -95,6 +95,9 @@ git branch --set-upstream-to=origin/远端分支名 本地分支名
 # git branch 本地分支名，或者git checkout 本地分支名
 # git branch -d 本地分支名
 
+# git branch 查看本地分支，-a则是查看远程分支
+# git branch -vv 查看本地分支和远程分支的提交记录差异
+
 # merge分支
 https://www.yiibai.com/git/git_merge.html
 # git merge 分支A 分支B
