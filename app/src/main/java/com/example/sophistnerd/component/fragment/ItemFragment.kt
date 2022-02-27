@@ -12,21 +12,29 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainViewModel
 import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
+import kotlin.random.Random
 
 /**
  * A fragment representing a list of Items.
  */
 class ItemFragment : Fragment() {
 
-    private var columnCount = 1
+    private val random = Random(10)
+    private var columnCount = 2
 
     private lateinit var viewModel: MainViewModel
     private val dataSource = ArrayList<UnsplashPhoto>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         //获取activity的viewmodel
         viewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
+
+        //图片列数增加随机
+        val next = random.nextInt(100)
+        columnCount = (next % 3) + 1
+        println("columnCount $columnCount $next")
     }
 
     override fun onCreateView(
