@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import java.util.logging.Logger
 import javax.inject.Inject
 
-class MainLifecycleObserver(val viewModel: MainViewModel) : LifecycleObserver {
+class MainLifecycleObserver(val savedStateViewModel: MainSavedStateViewModel) : LifecycleObserver {
 
     init {
         DaggerMainComponent.create().inject(this)
@@ -31,7 +31,7 @@ class MainLifecycleObserver(val viewModel: MainViewModel) : LifecycleObserver {
     fun onPause() {
         logger.info("onPause")
         coroutineScope.launch {
-            viewModel.refresh()
+            savedStateViewModel.refresh()
         }
     }
 

@@ -14,7 +14,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.sophistnerd.R
-import com.example.sophistnerd.component.jetpack.MainViewModel
+import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.util.showSnackbarMessage
 import kotlinx.coroutines.*
 
@@ -25,7 +25,10 @@ import kotlinx.coroutines.*
  */
 class PictureFragment : Fragment() {
 
-    private lateinit var viewModel: MainViewModel
+    private val savedStateViewModel by lazy {
+        //获取activity的viewmodel
+        ViewModelProviders.of(requireActivity()).get(MainSavedStateViewModel::class.java)
+    }
     private lateinit var imageView: ImageView
     private lateinit var searchKeywords: EditText
     private lateinit var lifecycleObserver: LifecycleObserver
@@ -34,8 +37,6 @@ class PictureFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        //获取activity的viewmodel
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
 
         initView()
         initLiveData()
@@ -63,19 +64,19 @@ class PictureFragment : Fragment() {
             val text = searchKeywords.text
             if (text != null && text.trim().isNotEmpty()) {
                 coroutineScope.launch {
-                    viewModel.search(text.trim().toString())
+                    savedStateViewModel.search(text.trim().toString())
                     showSnackbarMessage(it, "search finish")
                 }
             }
         }
 
         requireActivity().findViewById<Button>(R.id.previous_image).setOnClickListener {
-            viewModel.previous()
+            savedStateViewModel.previous()
             showSnackbarMessage(it, "previous finish")
         }
 
         requireActivity().findViewById<Button>(R.id.next_image).setOnClickListener {
-            viewModel.next()
+            savedStateViewModel.next()
             showSnackbarMessage(it, "next finish")
         }
 
@@ -85,11 +86,11 @@ class PictureFragment : Fragment() {
     }
 
     private fun initLiveData() {
-        viewModel.currentImage.observeForever {
+        savedStateViewModel.currentImage.observeForever {
             it.urls.regular?.let {
                 coroutineScope.launch {
                     val imageBitmap = withContext(Dispatchers.IO) {
-                        viewModel.downloadImage(it)
+                        savedStateViewModel.downloadImage(it)
                     }
                     imageView.setImageBitmap(imageBitmap)
                     showSnackbarMessage(imageView, "previous finish")

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.R
-import com.example.sophistnerd.component.jetpack.MainViewModel
+import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlin.random.Random
 
@@ -22,14 +22,14 @@ class ItemFragment : Fragment() {
     private val random = Random(10)
     private var columnCount = 2
 
-    private lateinit var viewModel: MainViewModel
+    private val savedStateViewModel by lazy {
+        //获取activity的viewmodel
+        ViewModelProviders.of(requireActivity()).get(MainSavedStateViewModel::class.java)
+    }
     private val dataSource = ArrayList<UnsplashPhoto>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //获取activity的viewmodel
-        viewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
 
         //图片列数增加随机
         val next = random.nextInt(100)
@@ -51,7 +51,7 @@ class ItemFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
                 adapter = ItemRecyclerViewAdapter(dataSource)
-                viewModel.imageSource.observeForever {
+                savedStateViewModel.imageSource.observeForever {
                     dataSource.clear()
                     dataSource.addAll(it)
                     adapter?.notifyDataSetChanged()

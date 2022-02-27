@@ -14,7 +14,9 @@
         android:theme="@style/Theme.SophistNerd">
         <activity
             android:name=".component.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="HomePage"
+            android:icon="@drawable/ic_app_icon">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
