@@ -37,9 +37,12 @@ fun isMainThread() = Looper.getMainLooper() == Looper.myLooper()
 
 @MainThread
 fun showSnackbarMessage(anchorView: View, msg: String) {
-    Snackbar.make(anchorView, msg, BaseTransientBottomBar.LENGTH_SHORT)
-        .setAction("确定") {
 
-        }
-        .show()
+    if (anchorView.isAttachedToWindow) {
+        Snackbar.make(anchorView, msg, BaseTransientBottomBar.LENGTH_SHORT)
+            .setAction("确定") {
+
+            }
+            .show()
+    }
 }

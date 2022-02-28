@@ -94,7 +94,7 @@ class PictureFragment : Fragment() {
                     }
                     imageBitmap?.let {
                         imageView.setImageBitmap(imageBitmap)
-                        showSnackbarMessage(imageView, "previous finish")
+                        showSnackbarMessage(imageView, "restore current finish")
                     }
                 }
             }

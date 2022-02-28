@@ -40,13 +40,6 @@ class MainSavedStateViewModel : ViewModel() {
         Gson().fromJson(string, UnsplashPhoto::class.java)?.let {
             currentImage.value = it
         }
-
-        //始终缓存当前图片
-        currentImage.observeForever {
-            currentImage.value?.let {
-                sp.edit().putString(KEY_SP_CURRENT_IMAGE, Gson().toJson(it)).apply()
-            }
-        }
     }
 
     @Inject
@@ -95,6 +88,12 @@ class MainSavedStateViewModel : ViewModel() {
     suspend fun refresh() {
         if (searchKeywords.value != null) {
             search(searchKeywords.value!!)
+        }
+    }
+
+    fun saveCurrent() {
+        currentImage.value?.let {
+            sp.edit().putString(KEY_SP_CURRENT_IMAGE, Gson().toJson(it)).apply()
         }
     }
 

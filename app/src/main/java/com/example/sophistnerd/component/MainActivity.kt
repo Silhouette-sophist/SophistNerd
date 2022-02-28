@@ -22,4 +22,10 @@ class MainActivity : AppCompatActivity() {
         //主要ViewModel关联的是Activity的LifecycleOwner！
         saveStateViewModel = ViewModelProviders.of(this).get(MainSavedStateViewModel::class.java)
     }
+
+    override fun onPause() {
+        super.onPause()
+
+        saveStateViewModel.saveCurrent()
+    }
 }
