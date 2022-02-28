@@ -46,3 +46,7 @@ fun showSnackbarMessage(anchorView: View, msg: String) {
             .show()
     }
 }
+
+//增加偏函数支持！！！方便传递函数参数
+fun <P1, P2, R> Function2<P1, P2, R>.partial1(p1: P1) = fun(p2: P2) = this(p1, p2)
+fun <P1, P2, R> Function2<P1, P2, R>.partial2(p2: P2) = fun(p1: P1) = this(p1, p2)

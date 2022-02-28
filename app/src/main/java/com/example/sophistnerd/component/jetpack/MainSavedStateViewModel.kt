@@ -47,41 +47,53 @@ class MainSavedStateViewModel : ViewModel() {
     @Inject
     lateinit var logger: Logger
 
-    suspend fun search(keywords: String) = withContext(Dispatchers.IO) {
+    suspend fun search(keywords: String, callback: ((String) -> Unit)? = null) = withContext(Dispatchers.IO) {
         searchKeywords.postValue(keywords)
         val unsplashResponse = unsplashApi.searchPhotos(keywords)
         index = 0
 
         imageSource.value?.clear()
         imageSource.value?.addAll(unsplashResponse.results)
-        logger.info("loading keywords : $keywords with ${imageSource.value?.size}")
+        "loading keywords : $keywords with ${imageSource.value?.size}".also { msg ->
+            callback?.invoke(msg)
+            logger.info(msg)
+        }
     }
 
-    fun previous() {
+    fun previous(callback: ((String) -> Unit)? = null) {
         imageSource.value?.let {
             if (it.size > 0) {
                 index--
                 index = abs(index % it.size)
                 currentImage.value = it[index]
-                logger.info("previous image : $index / ${it.size}")
+                "previous image : $index / ${it.size}".also { msg ->
+                    callback?.invoke(msg)
+                    logger.info(msg)
+                }
             }
         }
     }
 
-    fun next() {
+    fun next(callback: ((String) -> Unit)? = null) {
         imageSource.value?.let {
             if (it.size > 0) {
                 index++
                 index %= it.size
                 currentImage.value = it[index]
-                logger.info("next image : $index / ${it.size}")
+                "next image : $index / ${it.size}".also { msg ->
+                    callback?.invoke(msg)
+                    logger.info(msg)
+                }
             }
         }
     }
 
-    suspend fun downloadImage(url: String): Bitmap? {
+    suspend fun downloadImage(url: String, callback: ((String) -> Unit)? = null): Bitmap? {
         val bitmap = DownloadImageImpl().download(url)
-        logger.info("downloadImage finish $index / ${imageSource.value?.size}")
+        "downloadImage finish $index / ${imageSource.value?.size}".also {
+            callback?.invoke(it)
+            logger.info(it)
+        }
         return bitmap
     }
 

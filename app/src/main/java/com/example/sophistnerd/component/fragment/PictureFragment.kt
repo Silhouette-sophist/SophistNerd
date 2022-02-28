@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
+import com.example.sophistnerd.util.partial1
 import com.example.sophistnerd.util.showSnackbarMessage
 import kotlinx.coroutines.*
 
@@ -64,20 +65,17 @@ class PictureFragment : Fragment() {
             val text = searchKeywords.text
             if (text != null && text.trim().isNotEmpty()) {
                 coroutineScope.launch {
-                    savedStateViewModel.search(text.trim().toString())
-                    showSnackbarMessage(it, "search finish")
+                    savedStateViewModel.search(text.trim().toString(), ::showSnackbarMessage.partial1(it))
                 }
             }
         }
 
         requireActivity().findViewById<Button>(R.id.previous_image).setOnClickListener {
-            savedStateViewModel.previous()
-            showSnackbarMessage(it, "previous finish")
+            savedStateViewModel.previous(::showSnackbarMessage.partial1(it))
         }
 
         requireActivity().findViewById<Button>(R.id.next_image).setOnClickListener {
-            savedStateViewModel.next()
-            showSnackbarMessage(it, "next finish")
+            savedStateViewModel.next(::showSnackbarMessage.partial1(it))
         }
 
         requireActivity().findViewById<Button>(R.id.goto_page).setOnClickListener {
@@ -94,7 +92,6 @@ class PictureFragment : Fragment() {
                     }
                     imageBitmap?.let {
                         imageView.setImageBitmap(imageBitmap)
-                        showSnackbarMessage(imageView, "restore current finish")
                     }
                 }
             }
