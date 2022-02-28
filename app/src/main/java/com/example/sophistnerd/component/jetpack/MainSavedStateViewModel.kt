@@ -70,6 +70,8 @@ class MainSavedStateViewModel : ViewModel() {
                     callback?.invoke(msg)
                     logger.info(msg)
                 }
+            } else {
+                callback?.invoke("no previous image")
             }
         }
     }
@@ -84,6 +86,8 @@ class MainSavedStateViewModel : ViewModel() {
                     callback?.invoke(msg)
                     logger.info(msg)
                 }
+            } else {
+                callback?.invoke("no next image")
             }
         }
     }

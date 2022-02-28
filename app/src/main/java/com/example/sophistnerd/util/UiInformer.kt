@@ -2,8 +2,6 @@ package com.example.sophistnerd.util
 
 import android.os.Handler
 import android.os.Looper
-import android.os.Message
-import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.MainThread
@@ -17,11 +15,7 @@ private fun showMessage(msg: String, showLong: Boolean = false) {
         SophistApplication.sContext,
         msg,
         if (showLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
-    )
-        .also {
-            it.setGravity(Gravity.CENTER, 0, 0)
-            it.show()
-        }
+    ).show()
 }
 
 fun showMessageSafely(msg: String, showLong: Boolean = false) {
@@ -51,24 +45,3 @@ fun showSnackbarMessage(anchorView: View, msg: String) {
 //增加偏函数支持！！！方便传递函数参数。1.偏函数实现，2.匿名函数实现，3.lambda表达式实现
 fun <P1, P2, R> Function2<P1, P2, R>.partial1(p1: P1) = fun(p2: P2) = this(p1, p2)
 fun <P1, P2, R> Function2<P1, P2, R>.partial2(p2: P2) = fun(p1: P1) = this(p1, p2)
-
-fun interface MyInterface {
-    fun show()
-}
-
-fun lambdaInterface() {
-    println("lambdaInterface")
-}
-
-fun callShow(myInterface: MyInterface) {
-    myInterface.show()
-}
-
-fun main() {
-    //fuction interface的lambda表达式形式
-    callShow {
-        println("function interface")
-    }
-    //函数类型调用
-    callShow(::lambdaInterface)
-}
