@@ -19,9 +19,10 @@ import kotlin.random.Random
  */
 class ItemFragment : Fragment() {
 
-    private val random = Random(10)
+    companion object {
+        val sRandom = Random(System.currentTimeMillis())
+    }
     private var columnCount = 2
-
     private val savedStateViewModel by lazy {
         //获取activity的viewmodel
         ViewModelProviders.of(requireActivity()).get(MainSavedStateViewModel::class.java)
@@ -32,8 +33,8 @@ class ItemFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         //图片列数增加随机
-        val next = random.nextInt(100)
-        columnCount = (next % 3) + 1
+        val next = sRandom.nextInt(100)
+        columnCount = if (next < 80) 1 else 2
         println("columnCount $columnCount $next")
     }
 
