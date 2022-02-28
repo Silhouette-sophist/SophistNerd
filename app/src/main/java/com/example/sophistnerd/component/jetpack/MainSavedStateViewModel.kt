@@ -20,7 +20,7 @@ import javax.inject.Inject
 class MainSavedStateViewModel : ViewModel() {
 
     companion object {
-        private const val KEY_SP = "current_image"
+        private const val KEY_SP_CURRENT_IMAGE = "current_image"
     }
 
     private val sp : SharedPreferences by lazy {
@@ -36,9 +36,16 @@ class MainSavedStateViewModel : ViewModel() {
     init {
         DaggerMainComponent.create().inject(this)
 
-        val string = sp.getString(KEY_SP, "")
+        val string = sp.getString(KEY_SP_CURRENT_IMAGE, "")
         Gson().fromJson(string, UnsplashPhoto::class.java)?.let {
             currentImage.value = it
+        }
+
+        //始终缓存当前图片
+        currentImage.observeForever {
+            currentImage.value?.let {
+                sp.edit().putString(KEY_SP_CURRENT_IMAGE, Gson().toJson(it)).apply()
+            }
         }
     }
 
@@ -79,7 +86,7 @@ class MainSavedStateViewModel : ViewModel() {
         }
     }
 
-    suspend fun downloadImage(url: String): Bitmap {
+    suspend fun downloadImage(url: String): Bitmap? {
         val bitmap = DownloadImageImpl().download(url)
         logger.info("downloadImage finish $index / ${imageSource.value?.size}")
         return bitmap
@@ -91,9 +98,4 @@ class MainSavedStateViewModel : ViewModel() {
         }
     }
 
-    fun save() {
-        currentImage.value?.let {
-            sp.edit().putString(KEY_SP, Gson().toJson(it)).apply()
-        }
-    }
 }

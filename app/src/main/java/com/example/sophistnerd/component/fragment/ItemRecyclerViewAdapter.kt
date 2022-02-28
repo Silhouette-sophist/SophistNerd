@@ -54,7 +54,7 @@ class ItemRecyclerViewAdapter(
         val favorCounts: TextView = binding.favorCounts
     }
 
-    suspend fun downloadImage(url: String): Bitmap {
+    suspend fun downloadImage(url: String): Bitmap? {
         val bitmap = DownloadImageImpl().download(url)
         return bitmap
     }

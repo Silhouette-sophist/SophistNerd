@@ -4,5 +4,5 @@ import android.graphics.Bitmap
 
 interface DownloadImageApi {
 
-    suspend fun download(url: String): Bitmap
+    suspend fun download(url: String): Bitmap?
 }

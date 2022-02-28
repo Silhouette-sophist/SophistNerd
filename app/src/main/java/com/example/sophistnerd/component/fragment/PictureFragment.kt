@@ -92,8 +92,10 @@ class PictureFragment : Fragment() {
                     val imageBitmap = withContext(Dispatchers.IO) {
                         savedStateViewModel.downloadImage(it)
                     }
-                    imageView.setImageBitmap(imageBitmap)
-                    showSnackbarMessage(imageView, "previous finish")
+                    imageBitmap?.let {
+                        imageView.setImageBitmap(imageBitmap)
+                        showSnackbarMessage(imageView, "previous finish")
+                    }
                 }
             }
         }
