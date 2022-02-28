@@ -196,3 +196,15 @@ fun interface MyInterface {
 
 所以，后续对于callShow这种需要函数式接口对象的调用，直接按照lambda表达式方式调用即可！！！
 并以函数类型，实参类型，返回类型去定义lambda表达式即可。
+
+# by lazy和 lateinit
+- lateinit 只用于变量 var，而 lazy 只用于常量 val
+- lateinit 则用于只能生命周期流程中进行获取或者初始化的变量，比如 Android 的 onCreate()
+- lazy 应用于单例模式(if-null-then-init-else-return)，而且当且仅当变量被第一次调用的时候，委托方法才会执行
+
+# 字段的get和set，委托
+```kotlin
+var <propertyName>[: <PropertyType>] [= <property_initializer>]
+    [<getter>]
+    [<setter>]
+```
