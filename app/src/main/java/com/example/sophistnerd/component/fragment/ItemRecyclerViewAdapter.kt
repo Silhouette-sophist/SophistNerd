@@ -54,6 +54,13 @@ class ItemRecyclerViewAdapter(
         val favorCounts: TextView = binding.favorCounts
     }
 
+    //由于RecyclerView的onBindViewHolder()方法，只有在getItemViewType()返回类型不同时才会调用，
+    // 这点是跟ListView的getView()方法不同的地方，所以如果想要每次都调用onBindViewHolder()刷新item数据，
+    // 就要重写getItemViewType()，让其返回position，否则很容易产生数据错乱的现象。
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     suspend fun downloadImage(url: String): Bitmap? {
         val bitmap = DownloadImageImpl().download(url)
         return bitmap
