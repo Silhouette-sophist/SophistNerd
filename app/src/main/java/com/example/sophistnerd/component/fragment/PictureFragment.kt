@@ -9,6 +9,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModelProviders
@@ -65,17 +67,26 @@ class PictureFragment : Fragment() {
             val text = searchKeywords.text
             if (text != null && text.trim().isNotEmpty()) {
                 coroutineScope.launch {
+                    //1.偏函数功能
                     savedStateViewModel.search(text.trim().toString(), ::showSnackbarMessage.partial1(it))
                 }
             }
         }
 
         requireActivity().findViewById<Button>(R.id.previous_image).setOnClickListener {
-            savedStateViewModel.previous(::showSnackbarMessage.partial1(it))
+            //savedStateViewModel.previous(::showSnackbarMessage.partial1(it))
+            //2.匿名函数形式，等效偏函数功能
+            savedStateViewModel.previous(fun(msg : String){
+                showSnackbarMessage(it, msg = msg)
+            })
         }
 
         requireActivity().findViewById<Button>(R.id.next_image).setOnClickListener {
-            savedStateViewModel.next(::showSnackbarMessage.partial1(it))
+            //savedStateViewModel.next(::showSnackbarMessage.partial1(it))
+            //3.lambda表达式形式，等效偏函数功能
+            savedStateViewModel.next { msg : String ->
+                showSnackbarMessage(it, msg)
+            }
         }
 
         requireActivity().findViewById<Button>(R.id.goto_page).setOnClickListener {
