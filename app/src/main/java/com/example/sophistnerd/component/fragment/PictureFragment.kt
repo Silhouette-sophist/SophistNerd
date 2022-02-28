@@ -70,6 +70,8 @@ class PictureFragment : Fragment() {
                     //1.偏函数功能
                     savedStateViewModel.search(text.trim().toString(), ::showSnackbarMessage.partial1(it))
                 }
+            } else {
+                showSnackbarMessage(it, "请输入搜索英文关键词")
             }
         }
 
