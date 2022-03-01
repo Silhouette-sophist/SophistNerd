@@ -2,10 +2,13 @@ package com.example.sophistnerd.util
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.MainThread
 import com.example.sophistnerd.SophistApplication
@@ -19,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.*
 import java.text.SimpleDateFormat
+
 
 @MainThread
 private fun showMessage(msg: String, showLong: Boolean = false) {
@@ -123,4 +127,30 @@ suspend fun saveBitmap(view: View, fileName: String?) {
  */
 suspend fun saveBitmap(view: View) {
     saveBitmap(view, getCurrentFormatTime())
+}
+
+suspend fun saveImageViewBitmap(view: ImageView) {
+    saveImageViewBitmap(view, getCurrentFormatTime())
+}
+
+/**
+ * 保存ImageView的源图
+ */
+suspend fun saveImageViewBitmap(view: ImageView, fileName: String?) {
+
+    val drawable: Drawable = view.drawable ?: return
+    var outStream: FileOutputStream? = null
+
+    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+    val file = File(dir, "$fileName.png")
+
+    try {
+        outStream = FileOutputStream(file)
+        val bitmap = (drawable as BitmapDrawable).bitmap
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+        outStream.flush()
+        outStream.close()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
 }

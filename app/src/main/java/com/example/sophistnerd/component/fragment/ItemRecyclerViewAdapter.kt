@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.databinding.FragmentItemBinding
 import com.example.sophistnerd.service.DownloadImageImpl
-import com.example.sophistnerd.util.saveBitmap
+import com.example.sophistnerd.util.saveImageViewBitmap
 import com.example.sophistnerd.util.showSnackbarMessage
 import kotlinx.coroutines.*
 
@@ -55,7 +55,7 @@ class ItemRecyclerViewAdapter(
                 .setMessage("是否保存图片？")
                 .setPositiveButton("下载") { p0, p1 ->
                     coroutineScope.launch {
-                        saveBitmap(it)
+                        saveImageViewBitmap(it)
                         showSnackbarMessage(it, "下载完成")
                     }
                 }

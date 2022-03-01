@@ -60,7 +60,7 @@ class PictureFragment : Fragment() {
                     .setMessage("是否保存图片？")
                     .setPositiveButton("下载") { p0, p1 ->
                         coroutineScope.launch {
-                            saveBitmap(it)
+                            saveImageViewBitmap(it)
                             showSnackbarMessage(it, "下载完成")
                         }
                     }
