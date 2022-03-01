@@ -6,8 +6,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.MainThread
 import com.example.sophistnerd.SophistApplication
+import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 
 @MainThread
 private fun showMessage(msg: String, showLong: Boolean = false) {
@@ -45,3 +47,14 @@ fun showSnackbarMessage(anchorView: View, msg: String) {
 //增加偏函数支持！！！方便传递函数参数。1.偏函数实现，2.匿名函数实现，3.lambda表达式实现
 fun <P1, P2, R> Function2<P1, P2, R>.partial1(p1: P1) = fun(p2: P2) = this(p1, p2)
 fun <P1, P2, R> Function2<P1, P2, R>.partial2(p2: P2) = fun(p1: P1) = this(p1, p2)
+
+
+//比较折中，后续直接缓存所有数据源，并记录当前index
+fun ArrayList<UnsplashPhotoWithStatus>.getSpecific(unsplashPhoto: UnsplashPhoto) : UnsplashPhotoWithStatus? {
+    this.forEach {
+        if (it.unsplashPhoto.equals(unsplashPhoto)) {
+            return it
+        }
+    }
+    return null
+}

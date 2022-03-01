@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
-import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
+import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import kotlin.random.Random
 
 /**
@@ -27,7 +27,7 @@ class ItemFragment : Fragment() {
         //获取activity的viewmodel
         ViewModelProviders.of(requireActivity()).get(MainSavedStateViewModel::class.java)
     }
-    private val dataSource = ArrayList<UnsplashPhoto>()
+    private val dataSource = ArrayList<UnsplashPhotoWithStatus>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

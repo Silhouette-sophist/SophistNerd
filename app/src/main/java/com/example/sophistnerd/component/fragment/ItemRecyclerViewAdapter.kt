@@ -6,16 +6,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.databinding.FragmentItemBinding
 import com.example.sophistnerd.service.DownloadImageImpl
-import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlinx.coroutines.*
 
 /**
  * [RecyclerView.Adapter] that can display a [PlaceholderItem].
  */
 class ItemRecyclerViewAdapter(
-    private val values: List<UnsplashPhoto>
+    private val values: List<UnsplashPhotoWithStatus>
 ) : RecyclerView.Adapter<ItemRecyclerViewAdapter.ViewHolder>() {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -34,15 +34,21 @@ class ItemRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        coroutineScope.launch {
-            val bitmap = withContext(Dispatchers.IO) {
-                item.urls.regular?.let { downloadImage(it) }
+        if (item.bitmap != null) {
+            holder.itemImageView.setImageBitmap(item.bitmap)
+        } else  {
+            coroutineScope.launch {
+                val bitmap = withContext(Dispatchers.IO) {
+                    item.unsplashPhoto.urls.regular?.let { downloadImage(it) }
+                }
+                //下载后需要记录
+                item.bitmap = bitmap
+                holder.itemImageView.setImageBitmap(bitmap)
             }
-            holder.itemImageView.setImageBitmap(bitmap)
         }
-        holder.authorName.text = item.user.name
-        holder.createAt.text = item.created_at
-        holder.favorCounts.text = "${item.likes}"
+        holder.authorName.text = item.unsplashPhoto.user.name
+        holder.createAt.text = item.unsplashPhoto.created_at
+        holder.favorCounts.text = "${item.unsplashPhoto.likes}"
     }
 
     override fun getItemCount(): Int = values.size

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sophistnerd.SophistApplication
 import com.example.sophistnerd.api.UnsplashApi
+import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.inject.DaggerMainComponent
 import com.example.sophistnerd.service.DownloadImageImpl
 import com.google.gson.Gson
@@ -26,7 +27,9 @@ class MainSavedStateViewModel : ViewModel() {
     private val sp : SharedPreferences by lazy {
         SophistApplication.sContext.getSharedPreferences("MainSavedStateViewModel", Context.MODE_PRIVATE)
     }
-    val imageSource = MutableLiveData<ArrayList<UnsplashPhoto>>(ArrayList())
+    val imageSource = MutableLiveData<ArrayList<UnsplashPhotoWithStatus>>(ArrayList())
+    //注意：当前图片的加载逻辑，首先上一张和下一张触发当前图片的修改，随后当前图片LiveData注册的观察者被通知到，然后会获取imageSource中的图片
+    //实际上缓存index比较好，但是为了能够恢复当前图片就设置为UnsplashPhoto对象。注意，下载完成后会把bitmap记录到imageSource中
     val currentImage = MutableLiveData<UnsplashPhoto>()
     //后续对搜索框进行持久化
     private val searchKeywords = MutableLiveData<String>()
@@ -53,7 +56,9 @@ class MainSavedStateViewModel : ViewModel() {
         index = 0
 
         imageSource.value?.clear()
-        imageSource.value?.addAll(unsplashResponse.results)
+        unsplashResponse.results.forEach {
+            imageSource.value?.add(UnsplashPhotoWithStatus(it))
+        }
         "loading keywords : $keywords with ${imageSource.value?.size}".also { msg ->
             callback?.invoke(msg)
             logger.info(msg)
@@ -65,7 +70,7 @@ class MainSavedStateViewModel : ViewModel() {
             if (it.size > 0) {
                 index--
                 index = abs(index % it.size)
-                currentImage.value = it[index]
+                currentImage.value = it[index].unsplashPhoto
                 "previous image : $index / ${it.size}".also { msg ->
                     callback?.invoke(msg)
                     logger.info(msg)
@@ -81,7 +86,7 @@ class MainSavedStateViewModel : ViewModel() {
             if (it.size > 0) {
                 index++
                 index %= it.size
-                currentImage.value = it[index]
+                currentImage.value = it[index].unsplashPhoto
                 "next image : $index / ${it.size}".also { msg ->
                     callback?.invoke(msg)
                     logger.info(msg)

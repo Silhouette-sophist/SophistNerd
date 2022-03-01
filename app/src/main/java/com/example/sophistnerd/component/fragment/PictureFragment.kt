@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
+import com.example.sophistnerd.util.getSpecific
 import com.example.sophistnerd.util.partial1
 import com.example.sophistnerd.util.showSnackbarMessage
 import kotlinx.coroutines.*
@@ -95,11 +96,28 @@ class PictureFragment : Fragment() {
     }
 
     private fun initLiveData() {
-        savedStateViewModel.currentImage.observeForever {
-            it.urls.regular?.let {
+        savedStateViewModel.currentImage.observeForever { currentPhoto ->
+            val specificUpsplashPhoto = savedStateViewModel.imageSource.value?.getSpecific(currentPhoto)
+            if (specificUpsplashPhoto != null) {
+                if (specificUpsplashPhoto.bitmap != null) {
+                    imageView.setImageBitmap(specificUpsplashPhoto.bitmap)
+                } else {
+                    specificUpsplashPhoto.unsplashPhoto.urls.regular?.let {
+                        coroutineScope.launch {
+                            val imageBitmap = withContext(Dispatchers.IO) {
+                                savedStateViewModel.downloadImage(it)
+                            }
+                            imageBitmap?.let {
+                                imageView.setImageBitmap(imageBitmap)
+                                specificUpsplashPhoto.bitmap = imageBitmap
+                            }
+                        }
+                    }
+                }
+            } else {
                 coroutineScope.launch {
                     val imageBitmap = withContext(Dispatchers.IO) {
-                        savedStateViewModel.downloadImage(it)
+                        currentPhoto.urls.regular?.let { savedStateViewModel.downloadImage(it) }
                     }
                     imageBitmap?.let {
                         imageView.setImageBitmap(imageBitmap)
