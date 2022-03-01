@@ -11,4 +11,4 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class UnsplashPhotoWithStatus(
     val unsplashPhoto: UnsplashPhoto,
-    var bitmap: Bitmap? = null) : Parcelable
+    @Transient var bitmap: Bitmap? = null) : Parcelable

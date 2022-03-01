@@ -96,31 +96,25 @@ class PictureFragment : Fragment() {
     }
 
     private fun initLiveData() {
-        savedStateViewModel.currentImage.observeForever { currentPhoto ->
-            val specificUpsplashPhoto = savedStateViewModel.imageSource.value?.getSpecific(currentPhoto)
-            if (specificUpsplashPhoto != null) {
-                if (specificUpsplashPhoto.bitmap != null) {
-                    imageView.setImageBitmap(specificUpsplashPhoto.bitmap)
-                } else {
-                    specificUpsplashPhoto.unsplashPhoto.urls.regular?.let {
-                        coroutineScope.launch {
-                            val imageBitmap = withContext(Dispatchers.IO) {
-                                savedStateViewModel.downloadImage(it)
-                            }
-                            imageBitmap?.let {
-                                imageView.setImageBitmap(imageBitmap)
-                                specificUpsplashPhoto.bitmap = imageBitmap
+        savedStateViewModel.indexLiveData.observeForever { currentPhotoIndex ->
+            if (currentPhotoIndex < savedStateViewModel.imageSource.value?.size ?: 0) {
+                val specificUpsplashPhoto =
+                    savedStateViewModel.imageSource.value?.get(currentPhotoIndex)
+                if (specificUpsplashPhoto != null) {
+                    if (specificUpsplashPhoto.bitmap != null) {
+                        imageView.setImageBitmap(specificUpsplashPhoto.bitmap)
+                    } else {
+                        specificUpsplashPhoto.unsplashPhoto.urls.regular?.let {
+                            coroutineScope.launch {
+                                val imageBitmap = withContext(Dispatchers.IO) {
+                                    savedStateViewModel.downloadImage(it)
+                                }
+                                imageBitmap?.let {
+                                    imageView.setImageBitmap(imageBitmap)
+                                    specificUpsplashPhoto.bitmap = imageBitmap
+                                }
                             }
                         }
-                    }
-                }
-            } else {
-                coroutineScope.launch {
-                    val imageBitmap = withContext(Dispatchers.IO) {
-                        currentPhoto.urls.regular?.let { savedStateViewModel.downloadImage(it) }
-                    }
-                    imageBitmap?.let {
-                        imageView.setImageBitmap(imageBitmap)
                     }
                 }
             }

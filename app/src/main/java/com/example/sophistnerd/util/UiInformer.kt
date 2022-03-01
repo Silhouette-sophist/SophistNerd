@@ -9,6 +9,8 @@ import com.example.sophistnerd.SophistApplication
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 
 @MainThread
@@ -58,3 +60,6 @@ fun ArrayList<UnsplashPhotoWithStatus>.getSpecific(unsplashPhoto: UnsplashPhoto)
     }
     return null
 }
+
+//扩展支持各种类型的反序列化，包括列表类
+internal inline fun <reified T> Gson.fromJsonExtend(json: String) = fromJson<T>(json, object : TypeToken<T>() {}.type)
