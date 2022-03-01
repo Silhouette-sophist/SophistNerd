@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.databinding.FragmentItemBinding
 import com.example.sophistnerd.service.DownloadImageImpl
-import com.example.sophistnerd.util.saveImageViewBitmap
+import com.example.sophistnerd.util.saveUrlImage
 import com.example.sophistnerd.util.showSnackbarMessage
 import kotlinx.coroutines.*
 
@@ -49,13 +49,16 @@ class ItemRecyclerViewAdapter(
                 holder.itemImageView.setImageBitmap(bitmap)
             }
         }
-        holder.itemImageView.setOnLongClickListener {
+        holder.itemImageView.setOnLongClickListener { it ->
             it as ImageView
             AlertDialog.Builder(it.context)
-                .setMessage("是否保存图片？")
+                .setMessage("是否保存源图？")
                 .setPositiveButton("下载") { p0, p1 ->
                     coroutineScope.launch {
-                        saveImageViewBitmap(it)
+                        //ViewHolder.absoluteAdapterPosition获取当前图片的位置
+                        values[holder.absoluteAdapterPosition].unsplashPhoto.urls.raw?.let { url ->
+                            saveUrlImage(url)
+                        }
                         showSnackbarMessage(it, "下载完成")
                     }
                 }
@@ -75,6 +78,10 @@ class ItemRecyclerViewAdapter(
         val authorName: TextView = binding.authorName
         val createAt: TextView = binding.createAt
         val favorCounts: TextView = binding.favorCounts
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     //由于RecyclerView的onBindViewHolder()方法，只有在getItemViewType()返回类型不同时才会调用，

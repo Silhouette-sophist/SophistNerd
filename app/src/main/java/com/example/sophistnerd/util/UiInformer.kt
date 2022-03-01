@@ -1,6 +1,7 @@
 package com.example.sophistnerd.util
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -21,6 +22,8 @@ import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 
 
@@ -87,7 +90,7 @@ fun getCurrentFormatTime() = getCurrentFormatTime("MM-dd-HH-mm-ss")
  * 将视图保存为文件
  * [view] 视图对象，[fileName] 文件路径
  */
-suspend fun saveBitmap(view: View, fileName: String?) {
+suspend fun saveBitmap(view: View, fileName: String) {
     withContext(Dispatchers.IO) {
         // 创建对应大小的bitmap
         val bitmap = Bitmap.createBitmap(
@@ -97,27 +100,7 @@ suspend fun saveBitmap(view: View, fileName: String?) {
         val canvas = Canvas(bitmap)
         view.draw(canvas)
 
-        //存储
-        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val file = File(dir, "$fileName.png")
-        var outStream: FileOutputStream? = null
-        if (file.isDirectory) { //如果是目录不允许保存
-            return@withContext
-        }
-        try {
-            outStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
-            outStream.flush()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                bitmap.recycle()
-                outStream?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
+        saveBitmap(bitmap, fileName)
     }
 }
 
@@ -129,6 +112,30 @@ suspend fun saveBitmap(view: View) {
     saveBitmap(view, getCurrentFormatTime())
 }
 
+suspend fun saveBitmap(bitmap: Bitmap, fileName: String = getCurrentFormatTime()) {
+    //存储
+    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+    val file = File(dir, "$fileName.png")
+    var outStream: FileOutputStream? = null
+    if (file.isDirectory) { //如果是目录不允许保存
+        return
+    }
+    try {
+        outStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
+        outStream.flush()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        try {
+            bitmap.recycle()
+            outStream?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+}
+
 suspend fun saveImageViewBitmap(view: ImageView) {
     saveImageViewBitmap(view, getCurrentFormatTime())
 }
@@ -137,20 +144,47 @@ suspend fun saveImageViewBitmap(view: ImageView) {
  * 保存ImageView的源图
  */
 suspend fun saveImageViewBitmap(view: ImageView, fileName: String?) {
+    withContext(Dispatchers.IO) {
+        val drawable: Drawable = view.drawable ?: return@withContext
+        var outStream: FileOutputStream? = null
 
-    val drawable: Drawable = view.drawable ?: return
-    var outStream: FileOutputStream? = null
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val file = File(dir, "$fileName.png")
 
-    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-    val file = File(dir, "$fileName.png")
+        try {
+            outStream = FileOutputStream(file)
+            val bitmap = (drawable as BitmapDrawable).bitmap
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+            outStream.flush()
+            outStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+}
 
-    try {
-        outStream = FileOutputStream(file)
-        val bitmap = (drawable as BitmapDrawable).bitmap
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
-        outStream.flush()
-        outStream.close()
-    } catch (e: IOException) {
-        e.printStackTrace()
+/**
+ * saveUrlImage下载网络图片
+ * [urlPath] url地址
+ */
+suspend fun saveUrlImage(urlPath: String){
+    withContext(Dispatchers.IO) {
+        val httpURLConnection = URL(urlPath).openConnection() as HttpURLConnection
+        httpURLConnection.doInput = true
+        httpURLConnection.connectTimeout = 60000
+        httpURLConnection.readTimeout = 60000
+        httpURLConnection.connect()
+
+        var bitmap : Bitmap? = null
+        try {
+            val inputStream = httpURLConnection.inputStream
+            bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream.close()
+
+            saveBitmap(bitmap)
+        } catch (e : Exception) {
+            println("DownloadImageImpl $e")
+        }
+        return@withContext bitmap
     }
 }
