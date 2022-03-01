@@ -5,10 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.databinding.FragmentItemBinding
 import com.example.sophistnerd.service.DownloadImageImpl
+import com.example.sophistnerd.util.saveBitmap
+import com.example.sophistnerd.util.showSnackbarMessage
 import kotlinx.coroutines.*
 
 /**
@@ -45,6 +48,20 @@ class ItemRecyclerViewAdapter(
                 item.bitmap = bitmap
                 holder.itemImageView.setImageBitmap(bitmap)
             }
+        }
+        holder.itemImageView.setOnLongClickListener {
+            it as ImageView
+            AlertDialog.Builder(it.context)
+                .setMessage("是否保存图片？")
+                .setPositiveButton("下载") { p0, p1 ->
+                    coroutineScope.launch {
+                        saveBitmap(it)
+                        showSnackbarMessage(it, "下载完成")
+                    }
+                }
+                .setNegativeButton("取消") { p0, p1 -> }
+                .show()
+            true
         }
         holder.authorName.text = item.unsplashPhoto.user.name
         holder.createAt.text = item.unsplashPhoto.created_at

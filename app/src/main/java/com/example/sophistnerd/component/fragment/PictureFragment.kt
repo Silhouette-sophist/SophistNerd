@@ -9,15 +9,14 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
-import com.example.sophistnerd.util.getSpecific
-import com.example.sophistnerd.util.partial1
-import com.example.sophistnerd.util.showSnackbarMessage
+import com.example.sophistnerd.util.*
 import kotlinx.coroutines.*
 
 /**
@@ -54,7 +53,22 @@ class PictureFragment : Fragment() {
 
     private fun initView() {
 
-        imageView = requireActivity().findViewById<ImageView>(R.id.image_view)
+        //会拦截掉Activity最终对左滑和右滑的处理
+        imageView = requireActivity().findViewById<ImageView>(R.id.image_view).also {
+            it.setOnLongClickListener { image ->
+                AlertDialog.Builder(it.context)
+                    .setMessage("是否保存图片？")
+                    .setPositiveButton("下载") { p0, p1 ->
+                        coroutineScope.launch {
+                            saveBitmap(it)
+                            showSnackbarMessage(it, "下载完成")
+                        }
+                    }
+                    .setNegativeButton("取消") { p0, p1 -> }
+                    .show()
+                false
+            }
+        }
         searchKeywords = requireActivity().findViewById<EditText>(R.id.search_keywords)
 
         requireActivity().findViewById<Button>(R.id.search_image).setOnClickListener {

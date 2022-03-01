@@ -1,5 +1,8 @@
 package com.example.sophistnerd.util
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -12,6 +15,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.*
+import java.text.SimpleDateFormat
 
 @MainThread
 private fun showMessage(msg: String, showLong: Boolean = false) {
@@ -63,3 +70,57 @@ fun ArrayList<UnsplashPhotoWithStatus>.getSpecific(unsplashPhoto: UnsplashPhoto)
 
 //扩展支持各种类型的反序列化，包括列表类
 internal inline fun <reified T> Gson.fromJsonExtend(json: String) = fromJson<T>(json, object : TypeToken<T>() {}.type)
+
+fun getCurrentFormatTime(format : String) : String {
+    return System.currentTimeMillis().run {
+        SimpleDateFormat(format).format(this)
+    }
+}
+
+fun getCurrentFormatTime() = getCurrentFormatTime("MM-dd-HH-mm-ss")
+
+/**
+ * 将视图保存为文件
+ * [view] 视图对象，[fileName] 文件路径
+ */
+suspend fun saveBitmap(view: View, fileName: String?) {
+    withContext(Dispatchers.IO) {
+        // 创建对应大小的bitmap
+        val bitmap = Bitmap.createBitmap(
+            view.width, view.height,
+            Bitmap.Config.RGB_565
+        )
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+
+        //存储
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val file = File(dir, "$fileName.png")
+        var outStream: FileOutputStream? = null
+        if (file.isDirectory) { //如果是目录不允许保存
+            return@withContext
+        }
+        try {
+            outStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
+            outStream.flush()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                bitmap.recycle()
+                outStream?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+}
+
+/**
+ * 将视图保存为文件，默认以当前时间戳为文件名
+ * [view] 视图对象
+ */
+suspend fun saveBitmap(view: View) {
+    saveBitmap(view, getCurrentFormatTime())
+}

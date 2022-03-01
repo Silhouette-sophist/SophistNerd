@@ -1,9 +1,13 @@
 package com.example.sophistnerd.component
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
@@ -32,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         //和Activity关联的ViewModel，fragment可直接获取通过ActivityContext获取到。
         //主要ViewModel关联的是Activity的LifecycleOwner！
         saveStateViewModel = ViewModelProviders.of(this).get(MainSavedStateViewModel::class.java)
+
+        requestMyPermissions()
     }
 
     override fun onPause() {
@@ -72,4 +78,34 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onTouchEvent(event)
     }
+
+    private fun requestMyPermissions() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            //没有授权，编写申请权限代码
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                100
+            )
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            //没有授权，编写申请权限代码
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                100
+            )
+        }
+    }
+
 }
