@@ -12,10 +12,11 @@ import com.example.sophistnerd.databinding.FragmentItemBinding
 import com.example.sophistnerd.service.DownloadImageImpl
 import com.example.sophistnerd.util.saveUrlImage
 import com.example.sophistnerd.util.showSnackbarMessage
+import com.unsplash.pickerandroid.photopicker.data.UnsplashUrls
 import kotlinx.coroutines.*
 
 /**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
+ * [RecyclerView.Adapter] that can display.
  */
 class ItemRecyclerViewAdapter(
     private val values: List<UnsplashPhotoWithStatus>
@@ -50,16 +51,18 @@ class ItemRecyclerViewAdapter(
             }
         }
         holder.itemImageView.setOnLongClickListener { it ->
+            val sourceUrlMap = getValidUrlMap(values[holder.absoluteAdapterPosition].unsplashPhoto.urls)
+            val sourceUrlKeyArray = sourceUrlMap.keys.toTypedArray()
             it as ImageView
             AlertDialog.Builder(it.context)
-                .setMessage("是否保存源图？")
-                .setPositiveButton("下载") { p0, p1 ->
+                .setTitle("选择要保存的源图类型？")
+                .setItems(sourceUrlKeyArray) { p0, p1 ->
                     coroutineScope.launch {
-                        //ViewHolder.absoluteAdapterPosition获取当前图片的位置
-                        values[holder.absoluteAdapterPosition].unsplashPhoto.urls.raw?.let { url ->
+                        val validUrl = sourceUrlMap[sourceUrlKeyArray[p1]]
+                        validUrl?.let { url ->
                             saveUrlImage(url)
                         }
-                        showSnackbarMessage(it, "下载完成")
+                        showSnackbarMessage(it, "下载${sourceUrlKeyArray[p1]}完成")
                     }
                 }
                 .setNegativeButton("取消") { p0, p1 -> }
@@ -69,6 +72,37 @@ class ItemRecyclerViewAdapter(
         holder.authorName.text = item.unsplashPhoto.user.name
         holder.createAt.text = item.unsplashPhoto.created_at
         holder.favorCounts.text = "${item.unsplashPhoto.likes}"
+    }
+
+    /**
+     * 解析unsplashUrls中的有效字段
+     */
+    private fun getValidUrlMap(unsplashUrls: UnsplashUrls?) : Map<String, String> {
+        val result = HashMap<String, String>()
+        unsplashUrls?.let { urls ->
+            urls.regular?.let {
+                result.put("regular", it)
+            }
+            urls.medium?.let {
+                result.put("medium", it)
+            }
+            urls.full?.let {
+                result.put("full", it)
+            }
+            urls.large?.let {
+                result.put("large", it)
+            }
+            urls.raw?.let {
+                result.put("raw", it)
+            }
+            urls.small?.let {
+                result.put("small", it)
+            }
+            urls.thumb?.let {
+                result.put("thumb", it)
+            }
+        }
+        return result
     }
 
     override fun getItemCount(): Int = values.size
