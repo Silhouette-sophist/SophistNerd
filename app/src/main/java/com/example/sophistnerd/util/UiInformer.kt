@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -22,6 +23,7 @@ import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.*
+import java.lang.IllegalStateException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -186,5 +188,26 @@ suspend fun saveUrlImage(urlPath: String){
             println("DownloadImageImpl $e")
         }
         return@withContext bitmap
+    }
+}
+
+fun showPositionLog(msg : String = "") {
+
+    val illegalStateException = IllegalStateException()
+    val stackTraceElement = illegalStateException.stackTrace[1]
+    val split = stackTraceElement.className.split(".")
+    //println("SophistNerd $split")
+    val className = split[split.size - 1]
+    val methodName = stackTraceElement.methodName
+    var positionMsg = "SophistNerd"
+    println("$positionMsg $className $methodName $msg")
+}
+
+fun getMotionEventDesc(motionEvent: MotionEvent?) : String{
+    return when(motionEvent?.action){
+        MotionEvent.ACTION_DOWN -> "ACTION_DOWN"
+        MotionEvent.ACTION_MOVE -> "ACTION_MOVE"
+        MotionEvent.ACTION_UP -> "ACTION_UP"
+        else -> {"${motionEvent?.action}"}
     }
 }

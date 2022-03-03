@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
@@ -36,13 +34,9 @@ class PictureFragment : Fragment() {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        initView()
-        initLiveData()
-    }
-
+    /**
+     * 将视图压入显示
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,10 +45,20 @@ class PictureFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_picture, container, false)
     }
 
+    /**
+     * 绑定视图上的控件
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initView()
+        initLiveData()
+    }
+
     private fun initView() {
 
         //会拦截掉Activity最终对左滑和右滑的处理
-        imageView = requireActivity().findViewById<ImageView>(R.id.image_view).also {
+        imageView = requireActivity().findViewById<ImageView>(R.id.image_view).also { it ->
             it.setOnLongClickListener { image ->
                 AlertDialog.Builder(it.context)
                     .setMessage("是否保存图片？")

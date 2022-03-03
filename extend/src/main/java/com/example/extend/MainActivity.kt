@@ -1,6 +1,7 @@
 package com.example.extend
 
 import android.os.Bundle
+import android.view.MotionEvent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -8,6 +9,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.extend.databinding.ActivityMainBinding
+import com.example.testlifecycle.utils.getMotionEventDesc
 import com.example.testlifecycle.utils.showPositionLog
 
 class MainActivity : AppCompatActivity() {
@@ -68,5 +70,10 @@ class MainActivity : AppCompatActivity() {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         showPositionLog()
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        showPositionLog(getMotionEventDesc(event))
+        return super.onTouchEvent(event)
     }
 }
