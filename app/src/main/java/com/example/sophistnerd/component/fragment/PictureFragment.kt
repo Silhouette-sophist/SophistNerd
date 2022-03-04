@@ -32,7 +32,10 @@ class PictureFragment : Fragment() {
     private lateinit var searchKeywords: EditText
     private lateinit var lifecycleObserver: LifecycleObserver
 
-    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    //注意SupervisorJob+CoroutineExceptionHandler一起使用，才不会导致子协程崩溃影响到父协程！！！
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler { _, exception ->
+        println("CoroutineExceptionHandler got $exception")
+    })
 
     /**
      * 将视图压入显示
@@ -132,6 +135,8 @@ class PictureFragment : Fragment() {
                                     specificUpsplashPhoto.bitmap = imageBitmap
                                 }
                             }
+                            //picasso包替代上面的使用
+                            //Picasso.get().load(it).into(imageView);
                         }
                     }
                 }

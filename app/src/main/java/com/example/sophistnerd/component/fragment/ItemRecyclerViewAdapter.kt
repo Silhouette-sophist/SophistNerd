@@ -7,22 +7,27 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.databinding.FragmentItemBinding
 import com.example.sophistnerd.service.DownloadImageImpl
-import com.example.sophistnerd.util.saveUrlImage
 import com.example.sophistnerd.util.showSnackbarMessage
 import com.unsplash.pickerandroid.photopicker.data.UnsplashUrls
 import kotlinx.coroutines.*
+import kotlin.collections.HashMap
 
 /**
  * [RecyclerView.Adapter] that can display.
  */
 class ItemRecyclerViewAdapter(
-    private val values: List<UnsplashPhotoWithStatus>
+    private val values: List<UnsplashPhotoWithStatus>,
+    private val savedStateViewModel: MainSavedStateViewModel
 ) : RecyclerView.Adapter<ItemRecyclerViewAdapter.ViewHolder>() {
 
-    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    //注意SupervisorJob+CoroutineExceptionHandler一起使用，才不会导致子协程崩溃影响到父协程！！！
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler { _, exception ->
+        println("CoroutineExceptionHandler got $exception")
+    })
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -60,7 +65,7 @@ class ItemRecyclerViewAdapter(
                     coroutineScope.launch {
                         val validUrl = sourceUrlMap[sourceUrlKeyArray[p1]]
                         validUrl?.let { url ->
-                            saveUrlImage(url)
+                            savedStateViewModel.saveUrlImage(url, sourceUrlKeyArray[p1], values[holder.absoluteAdapterPosition].unsplashPhoto)
                         }
                         showSnackbarMessage(it, "下载${sourceUrlKeyArray[p1]}完成")
                     }

@@ -1,5 +1,6 @@
 package com.example.sophistnerd.inject
 
+import com.example.sophistnerd.api.OperateTrackApi
 import com.example.sophistnerd.api.UnsplashApi
 import dagger.Module
 import dagger.Provides
@@ -34,4 +35,14 @@ class ProviderModule {
             .create(UnsplashApi::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideOperateTrackApi(okHttpClient: OkHttpClient) : OperateTrackApi {
+        return Retrofit.Builder()
+            .baseUrl(OperateTrackApi.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OperateTrackApi::class.java)
+    }
 }

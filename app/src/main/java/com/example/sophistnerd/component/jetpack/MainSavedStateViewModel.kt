@@ -6,14 +6,18 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sophistnerd.SophistApplication
+import com.example.sophistnerd.api.OperateTrackApi
 import com.example.sophistnerd.api.UnsplashApi
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.inject.DaggerMainComponent
 import com.example.sophistnerd.service.DownloadImageImpl
 import com.example.sophistnerd.util.fromJsonExtend
 import com.google.gson.Gson
+import com.unsplash.pickerandroid.photopicker.data.UnsplashPhoto
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.Math.abs
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -56,6 +60,8 @@ class MainSavedStateViewModel : ViewModel() {
     lateinit var unsplashApi: UnsplashApi
     @Inject
     lateinit var logger: Logger
+    @Inject
+    lateinit var operateTrackApi: OperateTrackApi
 
     suspend fun search(keywords: String, callback: ((String) -> Unit)? = null) = withContext(Dispatchers.IO) {
         searchKeywords.postValue(keywords)
@@ -66,9 +72,20 @@ class MainSavedStateViewModel : ViewModel() {
         unsplashResponse.results.forEach {
             imageSource.value?.add(UnsplashPhotoWithStatus(it))
         }
+        withContext(Dispatchers.IO) {
+            SophistApplication.sContext.getExternalFilesDir(null)
+                ?.resolve("unsplash_resource")
+                ?.apply { mkdirs() }.also {
+                    File(it, "unsplash.json")
+                        .writeText(Gson().toJson(unsplashResponse.results))
+                }
+        }
         "loading keywords : $keywords with ${imageSource.value?.size}".also { msg ->
             callback?.invoke(msg)
             logger.info(msg)
+            async(Dispatchers.IO) {
+                //operateTrackApi.uploadSearchKeywords(keywords, unsplashResponse.results)
+            }
         }
         //注意这里是io线程，需要用postValue
         indexLiveData.postValue(0)
@@ -128,6 +145,15 @@ class MainSavedStateViewModel : ViewModel() {
         imageSource.value?.let {
             val json = Gson().toJson(it)
             sp.edit().putString(KEY_SP_IMAGE_SOURCE, json).apply()
+        }
+    }
+
+    suspend fun saveUrlImage(urlPath: String, type : String, unsplashPhoto: UnsplashPhoto){
+        com.example.sophistnerd.util.saveUrlImage(urlPath)
+        withContext(Dispatchers.IO) {
+            async(Dispatchers.IO) {
+                operateTrackApi.uploadDownloadImage(unsplashPhoto, type)
+            }
         }
     }
 

@@ -51,7 +51,7 @@ class ItemFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = ItemRecyclerViewAdapter(dataSource)
+                adapter = ItemRecyclerViewAdapter(dataSource, savedStateViewModel)
                 savedStateViewModel.imageSource.observeForever {
                     dataSource.clear()
                     dataSource.addAll(it)

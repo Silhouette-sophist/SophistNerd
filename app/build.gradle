@@ -77,4 +77,7 @@ dependencies {
     implementation "androidx.savedstate:savedstate:1.1.0"
     implementation "androidx.savedstate:savedstate-ktx:1.1.0"
 
+    //squareup的图片加载库，picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
 }

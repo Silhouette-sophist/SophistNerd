@@ -10,18 +10,18 @@ fun main() {
     val channel = Channel<Int>(3)
 
     runBlocking {
-        val producer = launch{
+        val producer = launch {
             var i = 0
-            while (true){
+            while (true) {
                 channel.send(i++)
                 delay(1000)
             }
         }
 
-        val consumer = launch{
+        val consumer = launch {
             val iterator = channel.iterator()
 
-            while(iterator.hasNext()) { // 挂起点
+            while (iterator.hasNext()) { // 挂起点
                 val element = iterator.next()
                 println("receive iterator $element")
                 delay(200)
