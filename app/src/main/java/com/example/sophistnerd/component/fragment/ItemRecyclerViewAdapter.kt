@@ -58,7 +58,7 @@ class ItemRecyclerViewAdapter(
                 holder.itemImageView.setImageBitmap(bitmap)
             }
         }
-        holder.itemImageView.setOnLongClickListener { it ->
+        holder.itemImageView.setOnLongClickListener {
             val sourceUrlMap = getValidUrlMap(values[holder.absoluteAdapterPosition].unsplashPhoto.urls)
             val sourceUrlKeyArray = sourceUrlMap.keys.toTypedArray()
             it as ImageView
