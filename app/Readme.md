@@ -208,3 +208,218 @@ var <propertyName>[: <PropertyType>] [= <property_initializer>]
     [<getter>]
     [<setter>]
 ```
+
+
+
+# DataBinding使用
+## 配置
+
+```groovy
+apply plugin: "kotlin-kapt" // Kotlin 使用 Databinding必须添加
+
+android {
+    
+    buildFeatures {
+        viewBinding true
+    }
+}
+```
+## 使用
+每一个layout文件都会生成一个Binding类对象，比如说layout文件夹中有个activity_main.xml文件，
+那么便会被apt处理生成一个MainActivityBinding类对象。
+用户侧使用，实际上就是需要在Activity、Fragment或者任何有视图绑定的地方进行管理上即可，如下就是Activity和
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //将activity_main.xml生成的ActivityMainBinding管理layoutInflater获取到binding对象，随后可以直接获取内部view了
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+}
+
+
+class ItemRecyclerViewAdapter(
+    private val values: List<UnsplashPhotoWithStatus>,
+    private val savedStateViewModel: MainSavedStateViewModel
+) : RecyclerView.Adapter<ItemRecyclerViewAdapter.ViewHolder>() {
+
+    //注意SupervisorJob+CoroutineExceptionHandler一起使用，才不会导致子协程崩溃影响到父协程！！！
+    private val coroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler { _, exception ->
+            println("CoroutineExceptionHandler got $exception")
+        })
+
+    /**
+     * 注意每一个layout文件都生成了一个binding对象，按照布局名反写并加上binding后缀!!!!
+     */
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+        return ViewHolder(
+            FragmentItemViewBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+    }
+}
+```
+
+
+# 标准库中的扩展函数
+标准库standard.kt中定义了常用的扩展函数，比如常见的with、let、run、apply、also、takeIf、takeUnless、repeat、TODO等
+
+```kotlin
+
+/**
+ * An exception is thrown to indicate that a method body remains to be implemented.
+ */
+public class NotImplementedError(message: String = "An operation is not implemented.") : Error(message)
+
+/**
+ * Always throws [NotImplementedError] stating that operation is not implemented.
+ */
+
+@kotlin.internal.InlineOnly
+public inline fun TODO(): Nothing = throw NotImplementedError()
+
+/**
+ * Always throws [NotImplementedError] stating that operation is not implemented.
+ *
+ * @param reason a string explaining why the implementation is missing.
+ */
+@kotlin.internal.InlineOnly
+public inline fun TODO(reason: String): Nothing = throw NotImplementedError("An operation is not implemented: $reason")
+
+/**
+ * Calls the specified function [block] and returns its result.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#run).
+ */
+@kotlin.internal.InlineOnly
+public inline fun <R> run(block: () -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return block()
+}
+
+/**
+ * Calls the specified function [block] with `this` value as its receiver and returns its result.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#run).
+ */
+@kotlin.internal.InlineOnly
+public inline fun <T, R> T.run(block: T.() -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return block()
+}
+
+/**
+ * Calls the specified function [block] with the given [receiver] as its receiver and returns its result.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#with).
+ */
+@kotlin.internal.InlineOnly
+public inline fun <T, R> with(receiver: T, block: T.() -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return receiver.block()
+}
+
+/**
+ * Calls the specified function [block] with `this` value as its receiver and returns `this` value.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#apply).
+ */
+@kotlin.internal.InlineOnly
+public inline fun <T> T.apply(block: T.() -> Unit): T {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    block()
+    return this
+}
+
+/**
+ * Calls the specified function [block] with `this` value as its argument and returns `this` value.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#also).
+ */
+@kotlin.internal.InlineOnly
+@SinceKotlin("1.1")
+public inline fun <T> T.also(block: (T) -> Unit): T {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    block(this)
+    return this
+}
+
+/**
+ * Calls the specified function [block] with `this` value as its argument and returns its result.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#let).
+ */
+@kotlin.internal.InlineOnly
+public inline fun <T, R> T.let(block: (T) -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return block(this)
+}
+
+/**
+ * Returns `this` value if it satisfies the given [predicate] or `null`, if it doesn't.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#takeif-and-takeunless).
+ */
+@kotlin.internal.InlineOnly
+@SinceKotlin("1.1")
+public inline fun <T> T.takeIf(predicate: (T) -> Boolean): T? {
+    contract {
+        callsInPlace(predicate, InvocationKind.EXACTLY_ONCE)
+    }
+    return if (predicate(this)) this else null
+}
+
+/**
+ * Returns `this` value if it _does not_ satisfy the given [predicate] or `null`, if it does.
+ *
+ * For detailed usage information see the documentation for [scope functions](https://kotlinlang.org/docs/reference/scope-functions.html#takeif-and-takeunless).
+ */
+@kotlin.internal.InlineOnly
+@SinceKotlin("1.1")
+public inline fun <T> T.takeUnless(predicate: (T) -> Boolean): T? {
+    contract {
+        callsInPlace(predicate, InvocationKind.EXACTLY_ONCE)
+    }
+    return if (!predicate(this)) this else null
+}
+
+/**
+ * Executes the given function [action] specified number of [times].
+ *
+ * A zero-based index of current iteration is passed as a parameter to [action].
+ *
+ * @sample samples.misc.ControlFlow.repeat
+ */
+@kotlin.internal.InlineOnly
+public inline fun repeat(times: Int, action: (Int) -> Unit) {
+    contract { callsInPlace(action) }
+
+    for (index in 0 until times) {
+        action(index)
+    }
+}
+```
+![img_1.png](img_1.png)
