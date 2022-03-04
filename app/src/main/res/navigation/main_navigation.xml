@@ -3,19 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mian_navigation"
-    app:startDestination="@id/pictureFragment">
+    app:startDestination="@id/picture_fragment">
 
     <fragment
-        android:id="@+id/pictureFragment"
+        android:id="@+id/picture_fragment"
         android:name="com.example.sophistnerd.component.fragment.PictureFragment"
         android:label="PictureFragment" >
         <action
             android:id="@+id/action_pictureFragment_to_itemFragment"
-            app:destination="@id/itemFragment" />
+            app:destination="@id/item_fragment" />
+        <action
+            android:id="@+id/action_picture_fragment_to_blank_fragment"
+            app:destination="@id/blank_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/itemFragment"
+        android:id="@+id/item_fragment"
         android:name="com.example.sophistnerd.component.fragment.ItemFragment"
         android:label="fragment_item_list"
-        tools:layout="@layout/fragment_item_list" />
+        tools:layout="@layout/fragment_item" />
+    <fragment
+        android:id="@+id/blank_fragment"
+        android:name="com.example.sophistnerd.component.fragment.BlankFragment"
+        android:label="fragment_blank"
+        tools:layout="@layout/fragment_blank" />
 </navigation>

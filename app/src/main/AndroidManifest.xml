@@ -14,7 +14,7 @@
         android:roundIcon="@drawable/ic_app_icon"
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
-        android:theme="@style/Theme.SophistNerd">
+        android:theme="@style/Theme.SophistNerd.NoActionBar">
         <activity
             android:name=".component.MainActivity"
             android:exported="true">

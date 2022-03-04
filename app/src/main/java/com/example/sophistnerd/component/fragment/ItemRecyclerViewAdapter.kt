@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
-import com.example.sophistnerd.databinding.FragmentItemBinding
+import com.example.sophistnerd.databinding.FragmentItemViewBinding
 import com.example.sophistnerd.service.DownloadImageImpl
 import com.example.sophistnerd.util.showSnackbarMessage
 import com.unsplash.pickerandroid.photopicker.data.UnsplashUrls
@@ -29,10 +29,13 @@ class ItemRecyclerViewAdapter(
         println("CoroutineExceptionHandler got $exception")
     })
 
+    /**
+     * 注意每一个layout文件都生成了一个binding对象，按照布局名反写并加上binding后缀!!!!
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         return ViewHolder(
-            FragmentItemBinding.inflate(
+            FragmentItemViewBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -112,7 +115,7 @@ class ItemRecyclerViewAdapter(
 
     override fun getItemCount(): Int = values.size
 
-    inner class ViewHolder(binding: FragmentItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(binding: FragmentItemViewBinding) : RecyclerView.ViewHolder(binding.root) {
         val itemImageView: ImageView = binding.itemImageView
         val authorName: TextView = binding.authorName
         val createAt: TextView = binding.createAt
@@ -130,9 +133,8 @@ class ItemRecyclerViewAdapter(
         return position
     }
 
-    suspend fun downloadImage(url: String): Bitmap? {
-        val bitmap = DownloadImageImpl().download(url)
-        return bitmap
+    private suspend fun downloadImage(url: String): Bitmap? {
+        return DownloadImageImpl().download(url)
     }
 
 }

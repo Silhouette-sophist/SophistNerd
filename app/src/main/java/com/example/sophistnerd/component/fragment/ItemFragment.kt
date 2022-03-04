@@ -8,10 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
+import com.example.sophistnerd.databinding.FragmentItemBinding
 import kotlin.random.Random
 
 /**
@@ -28,39 +27,34 @@ class ItemFragment : Fragment() {
         ViewModelProviders.of(requireActivity()).get(MainSavedStateViewModel::class.java)
     }
     private val dataSource = ArrayList<UnsplashPhotoWithStatus>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        //图片列数增加随机
-        val next = sRandom.nextInt(100)
-        columnCount = if (next < 80) 1 else 2
-        println("columnCount $columnCount $next")
-    }
+    //dataBinding
+    private lateinit var binding : FragmentItemBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_item_list, container, false)
+        binding = FragmentItemBinding.inflate(inflater, container, false)
+
+        //图片列数增加随机
+        val next = sRandom.nextInt(100)
+        columnCount = if (next < 80) 1 else 2
 
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = ItemRecyclerViewAdapter(dataSource, savedStateViewModel)
-                savedStateViewModel.imageSource.observeForever {
-                    dataSource.clear()
-                    dataSource.addAll(it)
-                    adapter?.notifyDataSetChanged()
+        with(binding.root) {
+            layoutManager = when {
+                columnCount <= 1 -> LinearLayoutManager(context)
+                else -> GridLayoutManager(context, columnCount)
+            }
+            adapter = ItemRecyclerViewAdapter(dataSource, savedStateViewModel)
+            savedStateViewModel.imageSource.observeForever {
+                dataSource.clear()
+                dataSource.addAll(it)
+                adapter?.notifyDataSetChanged()
 
-                    println("dataSource ${dataSource.size}")
-                }
+                println("dataSource ${dataSource.size}")
             }
         }
-        return view
+        return binding.root
     }
 }

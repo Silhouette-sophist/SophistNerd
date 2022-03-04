@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/picture_fragment"
+            android:icon="@drawable/ic_photo_imagea_view"
+            android:title="@string/photo_image_view" />
+        <item
+            android:id="@+id/item_fragment"
+            android:icon="@drawable/ic_list_image_view"
+            android:title="@string/item_list_view" />
+        <item
+            android:id="@+id/blank_fragment"
+            android:icon="@drawable/ic_other_choice_view"
+            android:title="@string/other_view" />
+    </group>
+</menu>
