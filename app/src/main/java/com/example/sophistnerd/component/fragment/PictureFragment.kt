@@ -15,6 +15,7 @@ import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.databinding.FragmentPictureBinding
 import com.example.sophistnerd.util.*
+import com.example.sophistnerd.view.SwipeImageView
 import kotlinx.coroutines.*
 
 /**
@@ -75,6 +76,27 @@ class PictureFragment : Fragment() {
                 .setNegativeButton("取消") { p0, p1 -> }
                 .show()
             false
+        }
+        binding.imageView.swipeCallback = object : SwipeImageView.SwipeCallback {
+            override fun swipeUp() {
+                showSnackbarMessage(binding.imageView, "上滑")
+            }
+
+            override fun swipeDown() {
+                showSnackbarMessage(binding.imageView, "下滑")
+            }
+
+            override fun swipePrevious() {
+                savedStateViewModel.previous { msg : String ->
+                    showSnackbarMessage(binding.imageView, msg)
+                }
+            }
+
+            override fun swipeNext() {
+                savedStateViewModel.next(fun(msg : String){
+                    showSnackbarMessage(binding.imageView, msg = msg)
+                })
+            }
         }
 
         binding.searchKeywords.setOnClickListener {

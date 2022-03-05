@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
-import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -19,7 +18,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.databinding.ActivityMainBinding
-import com.example.sophistnerd.util.showMessageSafely
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 
@@ -27,15 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-
-    companion object {
-        const val THRESHOLD = 200
-    }
-    //手指按下的点为(pointDownX, pointDownY)手指离开屏幕的点为(pointUpX, pointUpY)
-    private var pointDownX = 0f
-    private var pointDownY = 0f
-    private var pointUpX = 0f
-    private var pointUpY = 0f
 
     private lateinit var saveStateViewModel: MainSavedStateViewModel
 
@@ -89,39 +78,6 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
 
         saveStateViewModel.saveCurrent()
-    }
-
-    /**
-     * 注意当事件没消费时，最后交由Activity处理
-     * 注意事件传递：Activity--ViewGroup--View****View--ViewGroup--Activity
-     */
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        //继承了Activity的onTouchEvent方法，直接监听点击事件
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            //当手指按下的时候
-            pointDownX = event.x
-            pointDownY = event.y
-        }
-        if (event.action == MotionEvent.ACTION_UP) {
-            //当手指离开的时候
-            pointUpX = event.x
-            pointUpY = event.y
-            when {
-                pointDownY - pointUpY > THRESHOLD -> {
-                    showMessageSafely("SwipeUp")
-                }
-                pointUpY - pointDownY > THRESHOLD -> {
-                    showMessageSafely("SwipeDown")
-                }
-                pointDownX - pointUpX > THRESHOLD -> {
-                    saveStateViewModel.next(::showMessageSafely)
-                }
-                pointUpX - pointDownX > THRESHOLD -> {
-                    saveStateViewModel.previous(::showMessageSafely)
-                }
-            }
-        }
-        return super.onTouchEvent(event)
     }
 
     private fun requestMyPermissions() {
