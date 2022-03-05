@@ -99,7 +99,7 @@ class PictureFragment : Fragment() {
             }
         }
 
-        binding.searchKeywords.setOnClickListener {
+        binding.searchImageButton.setOnClickListener {
             //隐藏软键盘
             val manager: InputMethodManager =
                 requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
