@@ -30,10 +30,13 @@ class MainSavedStateViewModel : ViewModel() {
     private val sp : SharedPreferences by lazy {
         SophistApplication.sContext.getSharedPreferences("MainSavedStateViewModel", Context.MODE_PRIVATE)
     }
-    val imageSource = MutableLiveData<ArrayList<UnsplashPhotoWithStatus>>(ArrayList())
+    //可变类型不直接对外公开
+    private val _imageSource = MutableLiveData<ArrayList<UnsplashPhotoWithStatus>>(ArrayList())
+    val imageSource = _imageSource
     //注意：当前图片的加载逻辑，首先上一张和下一张触发当前图片的修改，随后当前图片LiveData注册的观察者被通知到，然后会获取imageSource中的图片
     //实际上缓存index比较好，但是为了能够恢复当前图片就设置为UnsplashPhoto对象。注意，下载完成后会把bitmap记录到imageSource中
-    val indexLiveData = MutableLiveData<Int>()
+    private val _indexLiveData = MutableLiveData<Int>()
+    val indexValue = _indexLiveData
     //用于辅助计算indexLiveData的字段
     private var index = 0
     //后续对搜索框进行持久化
@@ -47,14 +50,14 @@ class MainSavedStateViewModel : ViewModel() {
     init {
         DaggerMainComponent.create().inject(this)
 
-        indexLiveData.value = sp.getInt(KEY_SP_CURRENT_IMAGE_INDEX, 0)
-        index = indexLiveData.value!!
+        _indexLiveData.value = sp.getInt(KEY_SP_CURRENT_IMAGE_INDEX, 0)
+        index = _indexLiveData.value!!
 
         val dataSource = sp.getString(KEY_SP_IMAGE_SOURCE, "")?.let{
             Gson().fromJsonExtend<ArrayList<UnsplashPhotoWithStatus>>(it)
         }
         if (dataSource != null && dataSource.isNotEmpty()) {
-            imageSource.value = dataSource!!
+            _imageSource.value = dataSource!!
         }
     }
 
@@ -70,9 +73,9 @@ class MainSavedStateViewModel : ViewModel() {
         val unsplashResponse = unsplashApi.searchPhotos(keywords)
         index = 0
 
-        imageSource.value?.clear()
+        _imageSource.value?.clear()
         unsplashResponse.results.forEach {
-            imageSource.value?.add(UnsplashPhotoWithStatus(it))
+            _imageSource.value?.add(UnsplashPhotoWithStatus(it))
         }
         withContext(Dispatchers.IO) {
             SophistApplication.sContext.getExternalFilesDir(null)
@@ -82,7 +85,7 @@ class MainSavedStateViewModel : ViewModel() {
                         .writeText(Gson().toJson(unsplashResponse.results))
                 }
         }
-        "loading keywords : $keywords with ${imageSource.value?.size}".also { msg ->
+        "loading keywords : $keywords with ${_imageSource.value?.size}".also { msg ->
             callback?.invoke(msg)
             logger.info(msg)
             ioCoroutineScope.async {
@@ -90,16 +93,16 @@ class MainSavedStateViewModel : ViewModel() {
             }
         }
         //注意这里是io线程，需要用postValue
-        indexLiveData.postValue(0)
+        _indexLiveData.postValue(0)
     }
 
     fun previous(callback: ((String) -> Unit)? = null) {
-        imageSource.value?.let {
+        _imageSource.value?.let {
             if (it.size > 0) {
                 index--
                 index = abs(index % it.size)
-                indexLiveData.value = index
-                "previous image : ${indexLiveData.value} / ${it.size}".also { msg ->
+                _indexLiveData.value = index
+                "previous image : ${_indexLiveData.value} / ${it.size}".also { msg ->
                     callback?.invoke(msg)
                     logger.info(msg)
                 }
@@ -110,12 +113,12 @@ class MainSavedStateViewModel : ViewModel() {
     }
 
     fun next(callback: ((String) -> Unit)? = null) {
-        imageSource.value?.let {
+        _imageSource.value?.let {
             if (it.size > 0) {
                 index++
                 index %= it.size
-                indexLiveData.value = index
-                "next image : ${indexLiveData.value} / ${it.size}".also { msg ->
+                _indexLiveData.value = index
+                "next image : ${_indexLiveData.value} / ${it.size}".also { msg ->
                     callback?.invoke(msg)
                     logger.info(msg)
                 }
@@ -127,7 +130,7 @@ class MainSavedStateViewModel : ViewModel() {
 
     suspend fun downloadImage(url: String, callback: ((String) -> Unit)? = null): Bitmap? {
         val bitmap = DownloadImageImpl().download(url)
-        "downloadImage finish ${indexLiveData.value} / ${imageSource.value?.size}".also {
+        "downloadImage finish ${_indexLiveData.value} / ${_imageSource.value?.size}".also {
             callback?.invoke(it)
             logger.info(it)
         }
@@ -141,10 +144,10 @@ class MainSavedStateViewModel : ViewModel() {
     }
 
     fun saveCurrent() {
-        indexLiveData.value?.let {
+        _indexLiveData.value?.let {
             sp.edit().putInt(KEY_SP_CURRENT_IMAGE_INDEX, it).apply()
         }
-        imageSource.value?.let {
+        _imageSource.value?.let {
             val json = Gson().toJson(it)
             sp.edit().putString(KEY_SP_IMAGE_SOURCE, json).apply()
         }

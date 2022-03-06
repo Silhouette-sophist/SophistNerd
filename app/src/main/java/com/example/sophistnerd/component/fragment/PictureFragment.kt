@@ -138,7 +138,7 @@ class PictureFragment : Fragment() {
     }
 
     private fun initLiveData() {
-        savedStateViewModel.indexLiveData.observeForever { currentPhotoIndex ->
+        savedStateViewModel.indexValue.observeForever { currentPhotoIndex ->
             if (currentPhotoIndex < savedStateViewModel.imageSource.value?.size ?: 0) {
                 val specificUpsplashPhoto =
                     savedStateViewModel.imageSource.value?.get(currentPhotoIndex)
