@@ -23,7 +23,7 @@ fun main() {
 
             while (iterator.hasNext()) { // 挂起点
                 val element = iterator.next()
-                println("receive iterator $element")
+                println("receive iterator $element ${Thread.currentThread().name}")
                 delay(200)
             }
         }
