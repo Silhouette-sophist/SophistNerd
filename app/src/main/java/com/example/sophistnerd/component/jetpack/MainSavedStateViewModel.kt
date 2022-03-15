@@ -43,7 +43,7 @@ class MainSavedStateViewModel : ViewModel() {
     private val searchKeywords = MutableLiveData<String>()
     //注意SupervisorJob+CoroutineExceptionHandler一起使用，才不会导致子协程崩溃影响到父协程！！！
     private val ioCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineExceptionHandler { _, exception ->
-        println("MainSavedStateViewModel got $exception")
+        logger.info("MainSavedStateViewModel got $exception")
     })
 
     //委托dagger进行依赖注入
@@ -88,7 +88,8 @@ class MainSavedStateViewModel : ViewModel() {
         "loading keywords : $keywords with ${_imageSource.value?.size}".also { msg ->
             callback?.invoke(msg)
             logger.info(msg)
-            ioCoroutineScope.async {
+            //注意不要用async，要用launch。async需要在去获取结果时才会抛出一场，而launch是在执行时！！！
+            ioCoroutineScope.launch {
                 operateTrackApi.uploadSearchKeywords(keywords, unsplashResponse.results)
             }
         }
@@ -155,8 +156,9 @@ class MainSavedStateViewModel : ViewModel() {
 
     suspend fun saveUrlImage(urlPath: String, type : String, unsplashPhoto: UnsplashPhoto){
         com.example.sophistnerd.util.saveUrlImage(urlPath)
-        ioCoroutineScope.async{
-            operateTrackApi.uploadDownloadImage(unsplashPhoto, type)
+        //注意不要用async，要用launch。async需要在去获取结果时才会抛出一场，而launch是在执行时！！！
+        ioCoroutineScope.launch{
+            operateTrackApi.uploadDownloadImage(type, unsplashPhoto)
         }
     }
 

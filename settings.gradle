@@ -1,5 +1,9 @@
+//插件仓库源+插件依赖
 pluginManagement {
     repositories {
+        maven {
+            url uri('./repo')
+        }
         maven { url  'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/google' }
         maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
@@ -7,10 +11,19 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        //本地仓库，找上传的插件
+        mavenLocal()
+    }
+
+    plugins {
+        id 'com.example.plugin_modul'
     }
 }
+
+//依赖仓库源+依赖
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    //repository ‘Gradle Libs‘ was added by unknown code就注释下面这个
+    //repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven { url  'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/google' }
@@ -18,8 +31,11 @@ dependencyResolutionManagement {
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
         google()
         mavenCentral()
+        //本地仓库，找上传的插件
+        mavenLocal()
     }
 }
 rootProject.name = "SophistNerd"
 include ':app'
 include ':extend'
+include ':plugin_module'

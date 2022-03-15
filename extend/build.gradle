@@ -3,6 +3,11 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+//本模块，或者buildSrc模块中的插件
+apply plugin: CustomPlugin
+//本地仓库里面
+//apply plugin: 'com.example.plugin_module'
+
 android {
     compileSdk 32
 
@@ -50,4 +55,19 @@ dependencies {
 
     //仅为了查看gradle插件源码，正常运行不要这个依赖，否则会依赖冲突！！！
     //implementation 'com.android.tools.build:gradle:3.1.0'
+
+    implementation 'com.example.plugin_module:MyPlugin:1.0.0'
+}
+
+//当前工程定义的插件，内部使用
+class CustomPlugin implements Plugin<Project>{
+    @Override
+    void apply(Project target) {
+        println('CustomPlugin execute....')
+        target.task("mytask"){
+            doLast {
+                println('MyPlugin中的task执行了')
+            }
+        }
+    }
 }

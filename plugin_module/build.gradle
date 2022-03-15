@@ -1,0 +1,30 @@
+plugins {
+    id 'groovy'
+    id 'maven-publish'
+}
+
+publishing {
+    publications {
+        PluginModule(MavenPublication) {
+            from components.java
+            groupId = 'com.example.plugin_module'
+            artifactId = 'myplugin'
+            version = '1.0.0'
+        }
+    }
+    repositories {
+        maven {
+            //./是当前目录../是父级目录
+            url ='./../repo'
+        }
+    }
+}
+
+dependencies {
+    //gradle sdk
+    implementation gradleApi()
+    //groovy sdk
+    implementation localGroovy()
+
+    implementation "com.android.tools.build:gradle:4.1.0"
+}
