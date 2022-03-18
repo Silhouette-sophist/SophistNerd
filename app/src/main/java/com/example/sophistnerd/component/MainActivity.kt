@@ -19,7 +19,6 @@ import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,10 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarNavigation.toolbar)
 
-        binding.appBarNavigation.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_navigation)

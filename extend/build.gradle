@@ -56,7 +56,7 @@ dependencies {
     //仅为了查看gradle插件源码，正常运行不要这个依赖，否则会依赖冲突！！！
     //implementation 'com.android.tools.build:gradle:3.1.0'
 
-    implementation 'com.example.plugin_module:MyPlugin:1.0.0'
+    //implementation 'com.example.plugin_module:MyPlugin:1.0.0'
 }
 
 //当前工程定义的插件，内部使用

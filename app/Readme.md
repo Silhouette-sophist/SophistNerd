@@ -423,3 +423,72 @@ public inline fun repeat(times: Int, action: (Int) -> Unit) {
 }
 ```
 ![img_1.png](img_1.png)
+
+
+# 泛型
+## 泛型擦除问题
+常规类型的泛型关系，父子关系容易理解。但是到了复合的泛型关系就不好理解了。比如：
+ArrayList<Double> 和 ArrayList<Number> 的类型都是 ArrayList。
+所以，泛型使用时，如何统一获取泛型的实际信息呢？
+
+## 突破泛型擦除问题
+实际上，复合类型的泛型信息还是存在字节码中的，只是常规方式无法直接获取到，可以通过以下几种方式：
+- 使用parameterizedType记录类型信息(使用匿名内部类绑定父类或父接口的信息)
+```kotlin
+fun main() {
+    
+    val gt = object : GenericTypeToken<Map<String, String>>(){}
+    println(gt.type)
+
+    //Gson中获取类型的方式
+    val typeToken = object : TypeToken<Map<String, Double>>() {}
+    println(typeToken.type)
+    println(typeToken.rawType)
+}
+
+open class GenericTypeToken<T> {
+    var type : Type = Any ::class.java
+    init {
+        val superClass = this.javaClass.genericSuperclass
+        type = (superClass as ParameterizedType).actualTypeArguments[0]
+    }
+}
+```
+- 使用内联函数获取泛型(在编译时将具体的类型插入相应的字节码中，运行时就可以获取到对应参数的类型了)
+```kotlin
+inline fun<reified T : Any> Gson.fromJson(json : String) : T {
+    return Gson().fromJson(json, T::class.java)
+}
+```
+
+## 协变、逆变、不变
+- 协变：Double 是 Number子类，那么List<Double> 是 List<Number>子类。如何表示可以接受Number子类的列表类型？
+```kotlin
+val stringList : List<String> = ArrayList<String>()
+//下面的out可以省略，将List<String>视作List<Any>的子类，就是做协变操作。
+val anyList : List<out Any> = stringList
+```
+注意：这种情况下只能够使用anyList取数据，无法往里面写入数据的。因为这种情况会记录泛型具体类型，然后获取值是进行转型安全。
+但是，你要是中间添加了数据，不知道是按照哪一种any实现类。后续获取数据就会出现转型问题了。
+类比 ? extends Number
+out表示泛型参数协变
+
+- 逆变：Double 是 Number子类。如何表示可以接受Double父类的列表类型？
+```kotlin
+//第二个参数里面的in表示，任何T的父类实现的Comparator都可以用于子类的排序。
+public fun <T> Iterable<T>.sortedWith(comparator: Comparator<in T>): List<T> {
+    if (this is Collection) {
+       if (size <= 1) return this.toList()
+       @Suppress("UNCHECKED_CAST")
+       return (toTypedArray<Any?>() as Array<T>).apply { sortWith(comparator) }.asList()
+    }
+    return toMutableList().apply { sortWith(comparator) }
+}
+```
+注意：这种情况只能够按照类型设定去写数据，无法从中读取数据类型。因为任何Double父类的Comparator，获取的类型都不确定，但是
+按照Double去往里面写入数据，Comparator是肯定能够生效的。
+类比 ? super Double
+in表示泛型参数逆变
+
+- 不变
+泛型类型初始化后不存在类型变化了。可以添加也可以读取，类型唯一性，不存在安全性问题。
