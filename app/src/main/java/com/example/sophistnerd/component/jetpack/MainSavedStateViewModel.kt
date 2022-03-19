@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import com.example.sophistnerd.SophistApplication
 import com.example.sophistnerd.api.OperateTrackApi
 import com.example.sophistnerd.api.UnsplashApi
+import com.example.sophistnerd.dao.UnsplashDatabaseInstance
+import com.example.sophistnerd.data.LocalKeywordsSearchInfo
 import com.example.sophistnerd.data.UnsplashPhotoWithStatus
 import com.example.sophistnerd.inject.DaggerMainComponent
 import com.example.sophistnerd.service.DownloadImageImpl
@@ -91,6 +93,13 @@ class MainSavedStateViewModel : ViewModel() {
             //注意不要用async，要用launch。async需要在去获取结果时才会抛出一场，而launch是在执行时！！！
             ioCoroutineScope.launch {
                 operateTrackApi.uploadSearchKeywords(keywords, unsplashResponse.results)
+                val keywordsSearchInfo = LocalKeywordsSearchInfo(keywords, /*unsplashResponse.results,*/ System.currentTimeMillis())
+                UnsplashDatabaseInstance.unsplashDatabase.unsplashSearchInfoDao().insertAll(keywordsSearchInfo)
+                logger.info("keywordsSearchInfo $keywordsSearchInfo")
+                val all = UnsplashDatabaseInstance.unsplashDatabase.unsplashSearchInfoDao().searchAll()
+                all.forEach {
+                    logger.info("keywordsSearchInfo--ret $it ${it.searchId}")
+                }
             }
         }
         //注意这里是io线程，需要用postValue
