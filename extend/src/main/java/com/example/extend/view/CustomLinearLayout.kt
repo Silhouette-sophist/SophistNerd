@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.LinearLayout
-import com.example.testlifecycle.utils.getMotionEventDesc
-import com.example.testlifecycle.utils.showPositionLog
+import com.example.extend.utils.getMotionEventDesc
+import com.example.extend.utils.showPositionLog
 
 class CustomLinearLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null

@@ -13,6 +13,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/coverage" />
             <option value="$PROJECT_DIR$/extend" />
             <option value="$PROJECT_DIR$/plugin_module" />
           </set>

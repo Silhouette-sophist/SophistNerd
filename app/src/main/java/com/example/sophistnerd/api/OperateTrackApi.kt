@@ -23,6 +23,6 @@ interface OperateTrackApi {
     ) : String
 
     companion object {
-        const val BASE_URL = "http://192.168.1.119:8080"
+        const val BASE_URL = "http://192.168.1.124:8081"
     }
 }

@@ -9,8 +9,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.extend.databinding.ActivityMainBinding
-import com.example.testlifecycle.utils.getMotionEventDesc
-import com.example.testlifecycle.utils.showPositionLog
+import com.example.extend.utils.getMotionEventDesc
+import com.example.extend.utils.showPositionLog
 
 class MainActivity : AppCompatActivity() {
 

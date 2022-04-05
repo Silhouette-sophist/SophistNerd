@@ -17,6 +17,8 @@ pluginManagement {
 
     plugins {
         id 'com.example.plugin_modul'
+        id 'com.android.application' version '7.1.1'
+        id 'org.jetbrains.kotlin.android' version '1.6.10'
     }
 }
 
@@ -39,3 +41,4 @@ rootProject.name = "SophistNerd"
 include ':app'
 include ':extend'
 include ':plugin_module'
+include ':coverage'

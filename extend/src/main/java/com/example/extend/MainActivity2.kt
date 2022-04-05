@@ -2,7 +2,7 @@ package com.example.extend
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.testlifecycle.utils.showPositionLog
+import com.example.extend.utils.showPositionLog
 
 class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

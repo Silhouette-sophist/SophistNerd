@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.extend.MainActivity2
 import com.example.extend.databinding.FragmentHomeBinding
-import com.example.testlifecycle.utils.showPositionLog
+import com.example.extend.utils.showPositionLog
 
 class HomeFragment : Fragment() {
 

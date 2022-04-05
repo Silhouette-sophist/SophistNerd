@@ -26,5 +26,6 @@ dependencies {
     //groovy sdk
     implementation localGroovy()
 
-    implementation "com.android.tools.build:gradle:4.1.0"
+    //3.4.1源码好分析一点
+    implementation "com.android.tools.build:gradle:3.4.1"
 }

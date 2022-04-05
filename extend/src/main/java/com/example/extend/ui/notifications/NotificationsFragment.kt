@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.extend.databinding.FragmentNotificationsBinding
-import com.example.testlifecycle.utils.showPositionLog
+import com.example.extend.utils.showPositionLog
 
 class NotificationsFragment : Fragment() {
 

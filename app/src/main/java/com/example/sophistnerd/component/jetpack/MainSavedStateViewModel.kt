@@ -92,7 +92,9 @@ class MainSavedStateViewModel : ViewModel() {
             logger.info(msg)
             //注意不要用async，要用launch。async需要在去获取结果时才会抛出一场，而launch是在执行时！！！
             ioCoroutineScope.launch {
-                operateTrackApi.uploadSearchKeywords(keywords, unsplashResponse.results)
+                val uploadSearchKeywordsResponse =
+                    operateTrackApi.uploadSearchKeywords(keywords, unsplashResponse.results)
+                logger.info("uploadSearchKeywordsResponse $keywords $uploadSearchKeywordsResponse")
                 val keywordsSearchInfo = LocalKeywordsSearchInfo(keywords, /*unsplashResponse.results,*/ System.currentTimeMillis())
                 UnsplashDatabaseInstance.unsplashDatabase.unsplashSearchInfoDao().insertAll(keywordsSearchInfo)
                 logger.info("keywordsSearchInfo $keywordsSearchInfo")

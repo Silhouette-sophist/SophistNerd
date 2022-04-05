@@ -1,4 +1,4 @@
-package com.example.testlifecycle.utils
+package com.example.extend.utils
 
 import android.view.MotionEvent
 import java.lang.IllegalStateException
