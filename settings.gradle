@@ -19,6 +19,7 @@ pluginManagement {
         id 'com.example.plugin_modul'
         id 'com.android.application' version '7.1.1'
         id 'org.jetbrains.kotlin.android' version '1.6.10'
+        id 'com.example.plugin_module.MyPlugin' version '1.0.0'
     }
 }
 
@@ -27,6 +28,9 @@ dependencyResolutionManagement {
     //repository ‘Gradle Libs‘ was added by unknown code就注释下面这个
     //repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven {
+            url uri('./repo')
+        }
         maven { url  'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/google' }
         maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
@@ -42,3 +46,4 @@ include ':app'
 include ':extend'
 include ':plugin_module'
 include ':coverage'
+include ':squareup'

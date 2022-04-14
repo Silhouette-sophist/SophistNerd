@@ -48,8 +48,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
-    implementation files('libs\\jacocoagent.jar')
-    implementation files('libs\\jacococli.jar')
+   /* implementation files('libs\\jacocoagent.jar')
+    implementation files('libs\\jacococli.jar')*/
     //implementation 'com.android.tools.build:gradle:3.4.1'
 
     // https://mvnrepository.com/artifact/org.jacoco/org.jacoco.core
