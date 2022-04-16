@@ -89,3 +89,37 @@ kapt实际上就是替代之前的annotationprocessor方式
 - 在依赖使用前进行注入
 实际上，就是生成几个辅助类，完成依赖关系的注入。
  ![img_3.png](img_3.png)
+  
+
+## DataBinding原理
+### 开启DataBinding编译选项
+```groovy
+android {
+
+    //打开databinding，这里说明数据绑定库与 Android Gradle 插件捆绑在一起，和覆盖率插桩开关类似！！！
+    buildFeatures {
+        dataBinding true
+    }
+}
+```
+
+### 布局文件委托给DataBinding
+在resource/layout中所有布局文件的顶级容器类按“alt——enter”，会有“Convert to databinding layout”
+![img_5.png](img_5.png)
+![img_4.png](img_4.png)
+
+### Activity等使用布局的位置直接调用生成的Databinding类
+
+![img_6.png](img_6.png)
+
+详细使用，参考文档即可 https://cloud.tencent.com/developer/article/1909533
+
+
+### 查看布局设置动作是如何转交的
+直接查看生成的布局binding类文件的逻辑即可，分析源码即可。
+
+![img_7.png](img_7.png)
+
+## DataBinding是如何完成的
+类似覆盖率插桩开关，还是在Android插件中找
+![img_8.png](img_8.png)

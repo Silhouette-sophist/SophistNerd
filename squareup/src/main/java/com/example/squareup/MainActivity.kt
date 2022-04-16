@@ -5,11 +5,11 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.squareup.api.ExampleApi
 import com.example.squareup.api.UnsplashApi
+import com.example.squareup.databinding.ActivityMainBinding
 import com.example.squareup.di.DaggerInjectComponent
 import com.example.squareup.di.RetrofitQualifier
 import com.example.squareup.util.showToastMessage
@@ -52,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var okHttpClient: OkHttpClient
 
+    lateinit var root : ActivityMainBinding
+
     val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler {_, throwable ->
         val errorMsg = "[${throwable.message}, ${throwable.cause}, ${Arrays.toString(throwable.stackTrace)}]"
         logger.warning(errorMsg)
@@ -59,7 +61,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
+        root = ActivityMainBinding.inflate(layoutInflater)
 
        initView()
         //requestMyPermissions()
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        findViewById<Button>(R.id.simple_param).setOnClickListener {
+        root.simpleParam.setOnClickListener {
             coroutineScope.launch {
                 val simpleResponse = withContext(Dispatchers.IO) {
                     unsplashApiProxy.postBaseInfo("simple_string")
@@ -81,11 +84,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<Button>(R.id.simple_response).setOnClickListener {
+        root.simpleResponse.setOnClickListener {
             showToastMessage(this@MainActivity, "simple_response not impl")
         }
 
-        findViewById<Button>(R.id.complex_param).setOnClickListener {
+        root.complexParam.setOnClickListener {
             coroutineScope.launch {
                 val unsplashApiProxy = retrofit.create(UnsplashApi::class.java)
                 val grades = arrayListOf(Grade("math", 80), Grade("english", 79))
@@ -98,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<Button>(R.id.complex_response).setOnClickListener {
+        root.complexResponse.setOnClickListener {
             showToastMessage(this@MainActivity, "complex_response not impl")
 
             val okHttpClient = OkHttpClient.Builder()
