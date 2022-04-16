@@ -8,38 +8,53 @@ import android.os.Environment
 import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.squareup.api.ExampleApi
 import com.example.squareup.api.UnsplashApi
-import com.example.squareup.converter.CustomConverter
-import com.example.squareup.util.SquareUpLog
+import com.example.squareup.di.DaggerInjectComponent
+import com.example.squareup.di.RetrofitQualifier
 import com.example.squareup.util.showToastMessage
+import com.google.gson.Gson
 import kotlinx.coroutines.*
 import okhttp3.*
-import okhttp3.Headers.Companion.toHeaders
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
 import java.io.IOException
-import java.net.ServerSocket
+import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
+import java.util.logging.Logger
+import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity() {
 
-    val retrofit by lazy {
-        Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(UnsplashApi.BASE_URL)
-            .build()
-    }
+    //todo 同意类型对象，需要用Quealifier去区分，不然报错。注意是kotlin字段的field上加注解
+    @field:RetrofitQualifier("UnsplashApi")
+    @Inject
+    lateinit var retrofit2: Retrofit
 
-    val unsplashApiProxy by lazy {
-        retrofit.create(UnsplashApi::class.java)
-    }
+    //todo 同意类型对象，需要用Quealifier去区分，不然报错。注意是kotlin字段的field上加注解
+    @field:RetrofitQualifier("ExampleApi")
+    @Inject
+    lateinit var retrofit : Retrofit
+
+    @Inject
+    lateinit var unsplashApiProxy: UnsplashApi
+
+    @Inject
+    lateinit var exampleApiProxy: ExampleApi
+
+    @Inject
+    lateinit var logger: Logger
+
+    @Inject
+    lateinit var gson: Gson
+
+    @Inject
+    lateinit var okHttpClient: OkHttpClient
 
     val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler {_, throwable ->
-        SquareUpLog.error(throwable)
+        val errorMsg = "[${throwable.message}, ${throwable.cause}, ${Arrays.toString(throwable.stackTrace)}]"
+        logger.warning(errorMsg)
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +63,12 @@ class MainActivity : AppCompatActivity() {
 
        initView()
         //requestMyPermissions()
+
+        //todo 注意，需要在各种被注入对象使用前完成注入，因此，将注入放到onCreate方法中
+        DaggerInjectComponent.create().inject(this)
+
+        //todo 上面已经对MainActivity对象完成了依赖注入，所以下面可以直接使用了！！！
+        logger.info("$retrofit, $unsplashApiProxy $okHttpClient")
     }
 
     private fun initView() {
@@ -82,11 +103,11 @@ class MainActivity : AppCompatActivity() {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor{
-                    SquareUpLog.info("interceptor --- ${it.request().url}")
+                    logger.info("interceptor --- ${it.request().url}")
                     it.proceed(it.request())
                 }
                 .addNetworkInterceptor {
-                    SquareUpLog.info("network interceptor --- ${it.request().url}")
+                    logger.info("network interceptor --- ${it.request().url}")
                     it.proceed(it.request())
                 }
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -119,11 +140,11 @@ class MainActivity : AppCompatActivity() {
 
             newCall.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    SquareUpLog.info("onFailure --- $call ${e.cause} ${e.message}, ${e.stackTrace}")
+                    logger.warning("onFailure --- $call ${e.cause} ${e.message}, ${e.stackTrace}")
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    SquareUpLog.info("onResponse --- $response")
+                    logger.info("onResponse --- $response")
                     //从请求响应体中
                     coroutineScope.launch {
                         showToastMessage(this@MainActivity, "读取开始")
