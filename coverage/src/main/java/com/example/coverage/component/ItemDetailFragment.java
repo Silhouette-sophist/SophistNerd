@@ -80,35 +80,6 @@ public class ItemDetailFragment extends Fragment {
 
         mToolbarLayout = rootView.findViewById(R.id.toolbar_layout);
         mTextView = binding.itemDetail;
-        binding.fab.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(getActivity(), "导出jacoco数据", Toast.LENGTH_LONG).show();
-                new Thread(() -> {
-                    /*Class<?> aClass = null;
-                    try {
-                        aClass = Class.forName("org.jacoco.agent.rt.RT");
-                        Object agent = aClass.getMethod("getAgent").invoke(null);
-                        for (Method declaredMethod : agent.getClass().getDeclaredMethods()) {
-                            System.out.println("declaredMethod -- " + declaredMethod);
-                        }
-                        Object getExecutionData = agent.getClass().getMethod("getExecutionData", boolean.class).invoke(agent, false);
-
-                        if (getExecutionData instanceof byte[]) {
-                            byte[] arr = (byte[]) getExecutionData;
-                            System.out.println("getAgent ---- " + Arrays.toString(arr));
-                        }
-
-                        System.out.println("getAgent ---- " + getExecutionData);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("getAgent error --- " + Arrays.toString(e.getStackTrace()));
-                    }*/
-                    JacocoHelper.generateEcFile(true);
-                }).start();
-                return false;
-            }
-        });
 
         // Show the placeholder content as text in a TextView & in the toolbar if available.
         updateContent();
