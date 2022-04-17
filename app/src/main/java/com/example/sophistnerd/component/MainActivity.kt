@@ -18,6 +18,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.sophistnerd.R
 import com.example.sophistnerd.component.jetpack.MainSavedStateViewModel
 import com.example.sophistnerd.databinding.ActivityMainBinding
+import com.example.sophistnerd.util.FileHelper
+import com.example.sophistnerd.util.JacocoHelper
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -73,6 +75,11 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
 
         saveStateViewModel.saveCurrent()
+
+        val outputJacocoCoverage = JacocoHelper.getInstance().outputJacocoCoverage()
+        println("outputJacocoCoverage ${outputJacocoCoverage.size}")
+        val coverageFilePath = FileHelper.writeCoverage(outputJacocoCoverage)
+        println("coverageFilePath $coverageFilePath")
     }
 
     private fun requestMyPermissions() {
