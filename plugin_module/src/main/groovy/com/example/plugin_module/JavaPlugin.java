@@ -11,12 +11,12 @@ public class JavaPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        System.out.println("JavaPlugin apply......");
+        System.out.println("JavaPlugin apply......" + TimeFormat.getCurrentTime());
 
         project.afterEvaluate(new Action<Project>() {
             @Override
             public void execute(Project project) {
-                System.out.println("JavaPlugin afterEvaluate......");
+                System.out.println("JavaPlugin afterEvaluate......" + TimeFormat.getCurrentTime());
             }
         });
     }
