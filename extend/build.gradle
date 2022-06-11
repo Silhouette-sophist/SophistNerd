@@ -1,12 +1,13 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    //使用自定义插件，都在一个包里面，第一个是groovy插件，第二个是java插件。由于kotlin未编译为字节码，所以无法使用
+    id 'com.example.sophist_plugin'
+    id 'com.example.java_plugin'
 }
 
 //本模块，或者buildSrc模块中的插件
 apply plugin: CustomPlugin
-//本地仓库里面
-//apply plugin: 'com.example.plugin_module'
 
 android {
     compileSdk 32

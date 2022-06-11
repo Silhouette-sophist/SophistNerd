@@ -1,4 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+//根目录先给构建脚本导入依赖，子项目中使用的插件，都是来自构建脚本的依赖。构建脚本依赖只针对于构建时，并不会打包到宿主里面
+buildscript {
+    dependencies {
+        classpath "com.example.plugin_module:myplugin:1.0.0"
+    }
+}
+
 plugins {
     id 'com.android.application' version '7.1.1' apply false
     id 'com.android.library' version '7.1.1' apply false

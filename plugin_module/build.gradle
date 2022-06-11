@@ -1,4 +1,6 @@
 plugins {
+    //由于按照groovy方式，srcSource是groovy，暂时不支持kotlin定义gradle插件需要kotlin插件支持编译kotlin文件为字节码
+    //groovy插件，支持编译groovy文件和java文件
     id 'groovy'
     id 'maven-publish'
 }
