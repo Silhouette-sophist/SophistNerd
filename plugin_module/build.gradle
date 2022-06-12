@@ -29,5 +29,8 @@ dependencies {
     implementation localGroovy()
 
     //3.4.1源码好分析一点
+    // 另外，Transform API是android插件提供的api，所以如果需要使用，就必须要增加下面的依赖
     implementation "com.android.tools.build:gradle:3.4.1"
+    //Transform一般是做字节码修改，所以使用字节码修改工具
+    implementation 'org.javassist:javassist:3.27.0-GA'
 }

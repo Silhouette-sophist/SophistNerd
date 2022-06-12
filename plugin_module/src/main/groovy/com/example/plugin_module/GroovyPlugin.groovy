@@ -1,10 +1,9 @@
 package com.example.plugin_module
 
-import com.android.build.api.transform.QualifiedContent
-import com.android.build.api.transform.Transform
-import com.android.build.api.transform.TransformException
-import com.android.build.api.transform.TransformInvocation
-import com.android.build.gradle.AppExtension;
+
+import com.android.build.gradle.AppExtension
+import com.example.plugin_module.helper.TimeFormat
+import com.example.plugin_module.transform.InjectTransform;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -25,35 +24,8 @@ class GroovyPlugin implements Plugin<Project> {
             }
         })
 
-        /*AppExtension android = (AppExtension) project.getExtensions().getByType(AppExtension.class)
-        android.registerTransform(new Transform() {
-            @Override
-            String getName() {
-                return "GroovyPluginTransform"
-            }
-
-            @Override
-            Set<QualifiedContent.ContentType> getInputTypes() {
-                return null
-            }
-
-            @Override
-            Set<? super QualifiedContent.Scope> getScopes() {
-                return null
-            }
-
-            @Override
-            boolean isIncremental() {
-                return false
-            }
-
-            @Override
-            void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-                println("GroovyPluginTransform.....transforming...." +TimeFormat.getCurrentTime())
-                Thread.sleep(5000)
-                println("GroovyPluginTransform.....transformed...." +TimeFormat.getCurrentTime())
-            }
-        })*/
+        AppExtension android = (AppExtension) project.getExtensions().getByType(AppExtension.class)
+        //android.registerTransform(new InjectTransform(project))
     }
 }
 

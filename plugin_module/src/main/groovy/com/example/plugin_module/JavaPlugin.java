@@ -1,5 +1,6 @@
 package com.example.plugin_module;
 
+import com.example.plugin_module.helper.TimeFormat;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
